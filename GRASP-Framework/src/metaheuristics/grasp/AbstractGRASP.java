@@ -20,14 +20,33 @@ import solutions.Solution;
 public abstract class AbstractGRASP<E> {
 
     public enum ConstructiveHeuristicType {
-        Basic, SampledGreedy, Reactive;
+        Basic, SampledGreedy, Reactive
     }
 
-    private interface ConstructiveHeuristic {
-        void newSolution();
+    private abstract static class ConstructiveHeuristic {
+
+        ConstructiveHeuristic(double param) {
+        }
+
+        abstract void newSolution();
     }
 
-    public class BasicHeuristic implements ConstructiveHeuristic {
+    public class BasicHeuristic extends ConstructiveHeuristic {
+
+        /**
+         * the GRASP greediness-randomness parameter
+         */
+        private final Double alpha;
+
+        /**
+         * @param alpha The GRASP greediness-randomness parameter (within the range
+         *              [0,1])
+         */
+        BasicHeuristic(double alpha) {
+            super(alpha);
+            this.alpha = alpha;
+        }
+
         @Override
         public void newSolution() {
             CL = makeCL();
@@ -75,13 +94,59 @@ public abstract class AbstractGRASP<E> {
         }
     }
 
-    public class SampledGreedyHeuristic implements ConstructiveHeuristic {
+    public class SampledGreedyHeuristic extends ConstructiveHeuristic {
+
+        /**
+         * the size of the sampled RCL
+         */
+        private final int p;
+
+        SampledGreedyHeuristic(double p) {
+            super(p);
+            this.p = (int) p;
+        }
+
         @Override
         public void newSolution() {
+            CL = makeCL();
+            RCL = makeRCL();
+            sol = createEmptySol();
+            cost = Double.POSITIVE_INFINITY;
+
+            /* Main loop, which repeats until the stopping criteria is reached. */
+            while (!constructiveStopCriteria()) {
+                cost = ObjFunction.evaluate(sol);
+                updateCL();
+
+                // Explore min(p, |CL|) candidate elements to enter the solution.
+                E minE = null;
+                int sampleSize = Math.min(p, CL.size());
+                double minCost = Double.POSITIVE_INFINITY;
+                for (int i = 0; i < sampleSize; i++) {
+                    E e = CL.remove(rng.nextInt(CL.size()));
+                    RCL.add(e);
+                    double delta = ObjFunction.evaluateInsertionCost(e, sol);
+                    if (delta < minCost) {
+                        minE = e;
+                        minCost = delta;
+                    }
+                }
+
+                // Among all candidates, chose the smallest one to insert.
+                RCL.clear();
+                if (minE == null) break;
+                sol.add(minE);
+                ObjFunction.evaluate(sol);
+            }
         }
     }
 
-    public class ReactiveHeuristic implements ConstructiveHeuristic {
+    public class ReactiveHeuristic extends ConstructiveHeuristic {
+
+        ReactiveHeuristic(double param) {
+            super(param);
+        }
+
         @Override
         public void newSolution() {
 
@@ -97,17 +162,12 @@ public abstract class AbstractGRASP<E> {
     /**
      * a random number generator
      */
-    static Random rng = new Random(0);
+    static Random rng = new Random(42);
 
     /**
      * the objective function being optimized
      */
     protected Evaluator<E> ObjFunction;
-
-    /**
-     * the GRASP greediness-randomness parameter
-     */
-    protected Double alpha;
 
     /**
      * the best (incumbent) solution cost
@@ -160,10 +220,9 @@ public abstract class AbstractGRASP<E> {
     public abstract ArrayList<E> makeCL();
 
     /**
-     * Creates the Restricted Candidate List, which is an ArrayList of the best
-     * candidate elements that can enter a solution. The best candidates are
-     * defined through a quality threshold, delimited by the GRASP
-     * {@link #alpha} greedyness-randomness parameter.
+     * Creates the Restricted Candidate List, which is an ArrayList of the
+     * candidate elements that can enter a solution. This list depends on
+     * the constructive heuristic being used.
      *
      * @return The Restricted Candidate List.
      */
@@ -204,23 +263,21 @@ public abstract class AbstractGRASP<E> {
      * Constructor for the AbstractGRASP class.
      *
      * @param filename   The file containing the objective function parameters.
-     * @param alpha      The GRASP greediness-randomness parameter (within the range
-     *                   [0,1])
+     * @param param      A double hyperparameter used by the constructive heuristics.
      * @param iterations The number of iterations which the GRASP will be executed.
      * @param hType      The constructive heuristic type to be used in generating new solutions.
      */
-    public AbstractGRASP(String filename, Double alpha, Integer iterations,
+    public AbstractGRASP(String filename, Double param, Integer iterations,
                          ConstructiveHeuristicType hType) throws IOException {
         this.ObjFunction = initEvaluator(filename);
-        this.alpha = alpha;
         this.iterations = iterations;
 
         if (hType == ConstructiveHeuristicType.Basic)
-            this.Heuristic = new BasicHeuristic();
+            this.Heuristic = new BasicHeuristic(param);
         else if (hType == ConstructiveHeuristicType.SampledGreedy)
-            this.Heuristic = new SampledGreedyHeuristic();
+            this.Heuristic = new SampledGreedyHeuristic(param);
         else if (hType == ConstructiveHeuristicType.Reactive)
-            this.Heuristic = new ReactiveHeuristic();
+            this.Heuristic = new ReactiveHeuristic(param);
     }
 
     /**
@@ -232,9 +289,12 @@ public abstract class AbstractGRASP<E> {
      */
     public Solution<E> solve() {
         bestSol = createEmptySol();
+        int interval = iterations / 10;
         for (int i = 0; i < iterations; i++) {
             Heuristic.newSolution();
             localSearch();
+            if (verbose && i % interval == 0)
+                System.out.println("(Iter. " + i + ") CurrSol = " + sol);
             if (bestSol.cost > sol.cost) {
                 bestSol = sol.clone();
                 if (verbose)

@@ -6,7 +6,6 @@ import solutions.KSolution;
 import solutions.Solution;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class GRASP_KQBF extends GRASP_QBF {
 
@@ -16,17 +15,16 @@ public class GRASP_KQBF extends GRASP_QBF {
      * Constructor for the GRASP_KQBF class. An inverse QBF objective function is
      * passed as argument for the superclass constructor.
      *
-     * @param alpha      The GRASP greediness-randomness parameter (within the range
-     *                   [0,1])
+     * @param param      A double hyperparameter used by the constructive heuristics.
      * @param iterations The number of iterations which the GRASP will be executed.
      * @param filename   Name of the file for which the objective function parameters
      *                   should be read.
      * @param hType      The constructive heuristic type to be used in generating new solutions.
      * @throws IOException necessary for I/O operations.
      */
-    public GRASP_KQBF(Double alpha, Integer iterations, String filename,
+    public GRASP_KQBF(Double param, Integer iterations, String filename,
                       ConstructiveHeuristicType hType) throws IOException {
-        super(alpha, iterations, filename, hType);
+        super(param, iterations, filename, hType);
         objFunction = (KQBF) ObjFunction;
     }
 
