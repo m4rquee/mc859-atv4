@@ -42,11 +42,8 @@ public class GRASP_QBF extends AbstractGRASP<Integer> {
     @Override
     public ArrayList<Integer> makeCL() {
         ArrayList<Integer> _CL = new ArrayList<>();
-        for (int i = 0; i < ObjFunction.getDomainSize(); i++) {
-            Integer cand = i;
-            _CL.add(cand);
-        }
-
+        for (int i = 0; i < ObjFunction.getDomainSize(); i++)
+            _CL.add(i);
         return _CL;
     }
 
@@ -81,7 +78,7 @@ public class GRASP_QBF extends AbstractGRASP<Integer> {
      */
     @Override
     public Solution<Integer> createEmptySol() {
-        Solution<Integer> sol = new Solution<Integer>();
+        Solution<Integer> sol = new Solution<>();
         sol.cost = 0.0;
         return sol;
     }

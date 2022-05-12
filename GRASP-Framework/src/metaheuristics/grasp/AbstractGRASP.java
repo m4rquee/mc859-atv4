@@ -150,21 +150,21 @@ public abstract class AbstractGRASP<E> {
         RCL = makeRCL();
         sol = createEmptySol();
         cost = Double.POSITIVE_INFINITY;
+        ArrayList<Double> deltas = new ArrayList<>();
 
         /* Main loop, which repeats until the stopping criteria is reached. */
         while (!constructiveStopCriteria()) {
             double maxCost = Double.NEGATIVE_INFINITY, minCost = Double.POSITIVE_INFINITY;
             cost = ObjFunction.evaluate(sol);
             updateCL();
-            Double[] deltas = new Double[CL.size()];
 
             /*
              * Explore all candidate elements to enter the solution, saving the
              * highest and lowest cost variation achieved by the candidates.
              */
-            for (int i = 0; i < CL.size(); i++) {
-                Double deltaCost = ObjFunction.evaluateInsertionCost(CL.get(i), sol);
-                deltas[i] = deltaCost;
+            for (E e : CL) {
+                Double deltaCost = ObjFunction.evaluateInsertionCost(e, sol);
+                deltas.add(deltaCost);
                 if (deltaCost < minCost)
                     minCost = deltaCost;
                 if (deltaCost > maxCost)
@@ -176,18 +176,17 @@ public abstract class AbstractGRASP<E> {
              * performance using parameter alpha as threshold.
              */
             for (int i = 0; i < CL.size(); i++) {
-                Double deltaCost = deltas[i];
+                Double deltaCost = deltas.get(i);
                 if (deltaCost <= minCost + alpha * (maxCost - minCost))
                     RCL.add(CL.get(i));
             }
 
             /* Choose a candidate randomly from the RCL */
             int rndIndex = rng.nextInt(RCL.size());
-            E inCand = RCL.get(rndIndex);
-            CL.remove(inCand);
-            sol.add(inCand);
+            sol.add(CL.remove(rndIndex));
             ObjFunction.evaluate(sol);
             RCL.clear();
+            deltas.clear();
         }
 
         return sol;
@@ -206,7 +205,7 @@ public abstract class AbstractGRASP<E> {
             constructiveHeuristic();
             localSearch();
             if (bestSol.cost > sol.cost) {
-                bestSol = new Solution<E>(sol);
+                bestSol = sol.clone();
                 if (verbose)
                     System.out.println("(Iter. " + i + ") BestSol = " + bestSol);
             }

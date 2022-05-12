@@ -2,12 +2,15 @@ package problems.qbf.solvers;
 
 import problems.Evaluator;
 import problems.qbf.KQBF;
+import solutions.KSolution;
 import solutions.Solution;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class GRASP_KQBF extends GRASP_QBF {
+
+    private final KQBF objFunction;
 
     /**
      * Constructor for the GRASP_KQBF class. An inverse QBF objective function is
@@ -22,6 +25,7 @@ public class GRASP_KQBF extends GRASP_QBF {
      */
     public GRASP_KQBF(Double alpha, Integer iterations, String filename) throws IOException {
         super(alpha, iterations, filename);
+        objFunction = (KQBF) ObjFunction;
     }
 
     @Override
@@ -31,27 +35,31 @@ public class GRASP_KQBF extends GRASP_QBF {
 
     @Override
     public ArrayList<Integer> makeCL() {
-        return super.makeCL();
-    }
-
-    @Override
-    public ArrayList<Integer> makeRCL() {
-        return super.makeRCL();
+        ArrayList<Integer> _CL = new ArrayList<>();
+        for (int i = 0; i < objFunction.getDomainSize(); i++)
+            if (objFunction.W[i] <= objFunction.W_max)
+                _CL.add(i);
+        return _CL;
     }
 
     @Override
     public void updateCL() {
-        super.updateCL();
+        Double currWeight = ((KSolution<Integer>) sol).weigth;
+        CL.removeIf(c -> // if adding this item will overpass the capacity
+                objFunction.W[c] > objFunction.W_max - currWeight
+        );
     }
 
     @Override
-    public Solution<Integer> createEmptySol() {
-        return super.createEmptySol();
+    public KSolution<Integer> createEmptySol() {
+        KSolution<Integer> sol = new KSolution<>(super.createEmptySol());
+        sol.weigth = 0.0;
+        return sol;
     }
 
     @Override
     public Solution<Integer> localSearch() {
-        return super.localSearch();
+        return super.localSearch(); // will only look for exchanges for items that already fit the knapsack
     }
 
     /**
@@ -60,7 +68,7 @@ public class GRASP_KQBF extends GRASP_QBF {
     public static void main(String[] args) throws IOException {
         long startTime = System.currentTimeMillis();
         GRASP_QBF grasp = new GRASP_KQBF(0.05, 1000, "instances/kqbf/kqbf020");
-        Solution<Integer> bestSol = grasp.solve();
+        KSolution<Integer> bestSol = (KSolution<Integer>) grasp.solve();
         System.out.println("maxVal = " + bestSol);
         long endTime = System.currentTimeMillis();
         long totalTime = endTime - startTime;
