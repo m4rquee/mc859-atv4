@@ -127,10 +127,10 @@ public abstract class AbstractGRASP<E> {
     /**
      * Constructor for the AbstractGRASP class.
      *
-     * @param filename    The file containing the objective function parameters.
-     * @param alpha       The GRASP greediness-randomness parameter (within the range
-     *                    [0,1])
-     * @param iterations  The number of iterations which the GRASP will be executed.
+     * @param filename   The file containing the objective function parameters.
+     * @param alpha      The GRASP greediness-randomness parameter (within the range
+     *                   [0,1])
+     * @param iterations The number of iterations which the GRASP will be executed.
      */
     public AbstractGRASP(String filename, Double alpha, Integer iterations) throws IOException {
         this.ObjFunction = initEvaluator(filename);
@@ -156,13 +156,15 @@ public abstract class AbstractGRASP<E> {
             double maxCost = Double.NEGATIVE_INFINITY, minCost = Double.POSITIVE_INFINITY;
             cost = ObjFunction.evaluate(sol);
             updateCL();
+            Double[] deltas = new Double[CL.size()];
 
             /*
              * Explore all candidate elements to enter the solution, saving the
              * highest and lowest cost variation achieved by the candidates.
              */
-            for (E c : CL) {
-                Double deltaCost = ObjFunction.evaluateInsertionCost(c, sol);
+            for (int i = 0; i < CL.size(); i++) {
+                Double deltaCost = ObjFunction.evaluateInsertionCost(CL.get(i), sol);
+                deltas[i] = deltaCost;
                 if (deltaCost < minCost)
                     minCost = deltaCost;
                 if (deltaCost > maxCost)
@@ -173,10 +175,10 @@ public abstract class AbstractGRASP<E> {
              * Among all candidates, insert into the RCL those with the highest
              * performance using parameter alpha as threshold.
              */
-            for (E c : CL) {
-                Double deltaCost = ObjFunction.evaluateInsertionCost(c, sol);
+            for (int i = 0; i < CL.size(); i++) {
+                Double deltaCost = deltas[i];
                 if (deltaCost <= minCost + alpha * (maxCost - minCost))
-                    RCL.add(c);
+                    RCL.add(CL.get(i));
             }
 
             /* Choose a candidate randomly from the RCL */
