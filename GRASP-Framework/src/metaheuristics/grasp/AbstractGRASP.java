@@ -5,6 +5,7 @@ package metaheuristics.grasp;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 import problems.Evaluator;
@@ -36,7 +37,7 @@ public abstract class AbstractGRASP<E> {
         /**
          * the GRASP greediness-randomness parameter
          */
-        private final Double alpha;
+        protected Double alpha;
 
         /**
          * @param alpha The GRASP greediness-randomness parameter (within the range
@@ -85,6 +86,7 @@ public abstract class AbstractGRASP<E> {
                 }
 
                 /* Choose a candidate randomly from the RCL */
+                if (RCL.size() == 0) break;
                 int rndIndex = rng.nextInt(RCL.size());
                 sol.add(CL.remove(rndIndex));
                 ObjFunction.evaluate(sol);
@@ -133,23 +135,62 @@ public abstract class AbstractGRASP<E> {
                 }
 
                 // Among all candidates, chose the smallest one to insert.
+                if (RCL.size() == 0) break;
                 RCL.clear();
-                if (minE == null) break;
                 sol.add(minE);
                 ObjFunction.evaluate(sol);
             }
         }
     }
 
-    public class ReactiveHeuristic extends ConstructiveHeuristic {
+    public class ReactiveHeuristic extends BasicHeuristic {
+
+        final double[] alphas, pdf, solSum, solCount, prefixSum;
+        final int n_alpha;
+        int alphaIndex;
 
         ReactiveHeuristic(double param) {
             super(param);
+            n_alpha = (int) param;
+            alphas = new double[n_alpha];
+            pdf = new double[n_alpha];
+            solSum = new double[n_alpha];
+            solCount = new double[n_alpha];
+            prefixSum = new double[n_alpha];
+            for (int i = 0; i < n_alpha; i++) {
+                alphas[i] = (i + 1) * 1.0 / n_alpha;
+                pdf[i] = 1.0 / n_alpha; // starts as a uniform distribution
+                solSum[i] = 0.0;
+                solCount[i] = 0.0;
+            }
+        }
+
+        void chooseAlpha() {
+            prefixSum[0] = pdf[0];
+            for (int i = 1; i < n_alpha; i++)
+                prefixSum[i] = prefixSum[i - 1] + pdf[i];
+            double random = rng.nextDouble();
+            alphaIndex = -(Arrays.binarySearch(prefixSum, random) + 1);
+            alpha = alphas[alphaIndex];
+        }
+
+        void updateDistribution() {
+            for (int i = 0; i < n_alpha; i++)
+                if (solSum[i] == 0.0 || solCount[i] == 0.0) return; // keep the old pdf
+            double denominator = 0.0;
+            for (int i = 0; i < n_alpha; i++)
+                denominator += -cost / solSum[i] * solCount[i];
+            for (int i = 0; i < n_alpha; i++)
+                pdf[i] = (-cost / solSum[i] * solCount[i]) / denominator;
         }
 
         @Override
         public void newSolution() {
-
+            chooseAlpha();
+            super.newSolution();
+            solSum[alphaIndex] += -cost;
+            solCount[alphaIndex]++;
+            updateDistribution();
         }
     }
 
