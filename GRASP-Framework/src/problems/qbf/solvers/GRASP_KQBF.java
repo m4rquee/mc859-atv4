@@ -15,16 +15,17 @@ public class GRASP_KQBF extends GRASP_QBF {
      * Constructor for the GRASP_KQBF class. An inverse QBF objective function is
      * passed as argument for the superclass constructor.
      *
-     * @param param      A double hyperparameter used by the constructive heuristics.
-     * @param iterations The number of iterations which the GRASP will be executed.
-     * @param filename   Name of the file for which the objective function parameters
-     *                   should be read.
-     * @param hType      The constructive heuristic type to be used in generating new solutions.
+     * @param param       A double hyperparameter used by the constructive heuristics.
+     * @param iterations  The number of iterations which the GRASP will be executed.
+     * @param filename    Name of the file for which the objective function parameters
+     *                    should be read.
+     * @param hType       The constructive heuristic type to be used in generating new solutions.
+     * @param stImproving If should use the first-improving local search, or the best-improving.
      * @throws IOException necessary for I/O operations.
      */
     public GRASP_KQBF(Double param, Integer iterations, String filename,
-                      ConstructiveHeuristicType hType) throws IOException {
-        super(param, iterations, filename, hType);
+                      ConstructiveHeuristicType hType, boolean stImproving) throws IOException {
+        super(param, iterations, filename, hType, stImproving);
         objFunction = (KQBF) ObjFunction;
     }
 
@@ -59,7 +60,7 @@ public class GRASP_KQBF extends GRASP_QBF {
     public static void main(String[] args) throws IOException {
         long startTime = System.currentTimeMillis();
         GRASP_QBF grasp = new GRASP_KQBF(0.05, 100000, "instances/kqbf/kqbf020",
-                ConstructiveHeuristicType.Basic);
+                ConstructiveHeuristicType.Basic, false);
         KSolution<Integer> bestSol = (KSolution<Integer>) grasp.solve();
         System.out.println("maxVal = " + bestSol);
         long endTime = System.currentTimeMillis();

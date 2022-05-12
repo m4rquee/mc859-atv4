@@ -19,20 +19,24 @@ import solutions.Solution;
  */
 public class GRASP_QBF extends AbstractGRASP<Integer> {
 
+    protected boolean stImproving;
+
     /**
      * Constructor for the GRASP_QBF class. An inverse QBF objective function is
      * passed as argument for the superclass constructor.
      *
-     * @param param      A double hyperparameter used by the constructive heuristics.
-     * @param iterations The number of iterations which the GRASP will be executed.
-     * @param filename   Name of the file for which the objective function parameters
-     *                   should be read.
-     * @param hType      The constructive heuristic type to be used in generating new solutions.
+     * @param param       A double hyperparameter used by the constructive heuristics.
+     * @param iterations  The number of iterations which the GRASP will be executed.
+     * @param filename    Name of the file for which the objective function parameters
+     *                    should be read.
+     * @param hType       The constructive heuristic type to be used in generating new solutions.
+     * @param stImproving If should use the first-improving local search, or the best-improving.
      * @throws IOException necessary for I/O operations.
      */
     public GRASP_QBF(Double param, Integer iterations, String filename,
-                     ConstructiveHeuristicType hType) throws IOException {
+                     ConstructiveHeuristicType hType, boolean stImproving) throws IOException {
         super(filename, param, iterations, hType);
+        this.stImproving = stImproving;
     }
 
     /*
@@ -106,6 +110,7 @@ public class GRASP_QBF extends AbstractGRASP<Integer> {
                     minDeltaCost = deltaCost;
                     bestCandIn = candIn;
                     bestCandOut = null;
+                    if (stImproving) break;
                 }
             }
             // Evaluate removals
@@ -115,9 +120,11 @@ public class GRASP_QBF extends AbstractGRASP<Integer> {
                     minDeltaCost = deltaCost;
                     bestCandIn = null;
                     bestCandOut = candOut;
+                    if (stImproving) break;
                 }
             }
             // Evaluate exchanges
+            outerLoop:
             for (Integer candIn : CL)
                 for (Integer candOut : sol) {
                     double deltaCost = ObjFunction.evaluateExchangeCost(candIn, candOut, sol);
@@ -125,6 +132,7 @@ public class GRASP_QBF extends AbstractGRASP<Integer> {
                         minDeltaCost = deltaCost;
                         bestCandIn = candIn;
                         bestCandOut = candOut;
+                        if (stImproving) break outerLoop;
                     }
                 }
             // Implement the best move, if it reduces the solution cost.
@@ -155,7 +163,7 @@ public class GRASP_QBF extends AbstractGRASP<Integer> {
     public static void main(String[] args) throws IOException {
         long startTime = System.currentTimeMillis();
         GRASP_QBF grasp = new GRASP_QBF(0.05, 100000, "instances/qbf/qbf020",
-                ConstructiveHeuristicType.Basic);
+                ConstructiveHeuristicType.Basic, false);
         Solution<Integer> bestSol = grasp.solve();
         System.out.println("maxVal = " + bestSol);
         long endTime = System.currentTimeMillis();
