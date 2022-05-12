@@ -19,6 +19,75 @@ import solutions.Solution;
  */
 public abstract class AbstractGRASP<E> {
 
+    public enum ConstructiveHeuristicType {
+        Basic, SampledGreedy, Reactive;
+    }
+
+    private interface ConstructiveHeuristic {
+        void newSolution();
+    }
+
+    public class BasicHeuristic implements ConstructiveHeuristic {
+        @Override
+        public void newSolution() {
+            CL = makeCL();
+            RCL = makeRCL();
+            sol = createEmptySol();
+            cost = Double.POSITIVE_INFINITY;
+            ArrayList<Double> deltas = new ArrayList<>();
+
+            /* Main loop, which repeats until the stopping criteria is reached. */
+            while (!constructiveStopCriteria()) {
+                double maxCost = Double.NEGATIVE_INFINITY, minCost = Double.POSITIVE_INFINITY;
+                cost = ObjFunction.evaluate(sol);
+                updateCL();
+
+                /*
+                 * Explore all candidate elements to enter the solution, saving the
+                 * highest and lowest cost variation achieved by the candidates.
+                 */
+                for (E e : CL) {
+                    Double deltaCost = ObjFunction.evaluateInsertionCost(e, sol);
+                    deltas.add(deltaCost);
+                    if (deltaCost < minCost)
+                        minCost = deltaCost;
+                    if (deltaCost > maxCost)
+                        maxCost = deltaCost;
+                }
+
+                /*
+                 * Among all candidates, insert into the RCL those with the highest
+                 * performance using parameter alpha as threshold.
+                 */
+                for (int i = 0; i < CL.size(); i++) {
+                    Double deltaCost = deltas.get(i);
+                    if (deltaCost <= minCost + alpha * (maxCost - minCost))
+                        RCL.add(CL.get(i));
+                }
+
+                /* Choose a candidate randomly from the RCL */
+                int rndIndex = rng.nextInt(RCL.size());
+                sol.add(CL.remove(rndIndex));
+                ObjFunction.evaluate(sol);
+                RCL.clear();
+                deltas.clear();
+            }
+        }
+    }
+
+    public class SampledGreedyHeuristic implements ConstructiveHeuristic {
+        @Override
+        public void newSolution() {
+        }
+    }
+
+    public class ReactiveHeuristic implements ConstructiveHeuristic {
+        @Override
+        public void newSolution() {
+
+        }
+    }
+
     /**
      * flag that indicates whether the code should print more information on
      * screen
@@ -76,6 +145,13 @@ public abstract class AbstractGRASP<E> {
     protected ArrayList<E> RCL;
 
     /**
+     * The GRASP constructive heuristic, which is responsible for building a
+     * feasible solution by selecting in a greedy-random fashion, candidate
+     * elements to enter the solution.
+     */
+    protected ConstructiveHeuristic Heuristic;
+
+    /**
      * Creates the Candidate List, which is an ArrayList of candidate elements
      * that can enter a solution.
      *
@@ -118,7 +194,7 @@ public abstract class AbstractGRASP<E> {
     public abstract Solution<E> localSearch();
 
     /**
-     * Creates an Evaluator based on the parmeters in the input file.
+     * Creates an Evaluator based on the parameters in the input file.
      *
      * @return The created evaluator.
      */
@@ -131,65 +207,20 @@ public abstract class AbstractGRASP<E> {
      * @param alpha      The GRASP greediness-randomness parameter (within the range
      *                   [0,1])
      * @param iterations The number of iterations which the GRASP will be executed.
+     * @param hType      The constructive heuristic type to be used in generating new solutions.
      */
-    public AbstractGRASP(String filename, Double alpha, Integer iterations) throws IOException {
+    public AbstractGRASP(String filename, Double alpha, Integer iterations,
+                         ConstructiveHeuristicType hType) throws IOException {
         this.ObjFunction = initEvaluator(filename);
         this.alpha = alpha;
         this.iterations = iterations;
-    }
 
-    /**
-     * The GRASP constructive heuristic, which is responsible for building a
-     * feasible solution by selecting in a greedy-random fashion, candidate
-     * elements to enter the solution.
-     *
-     * @return A feasible solution to the problem being minimized.
-     */
-    public Solution<E> constructiveHeuristic() {
-        CL = makeCL();
-        RCL = makeRCL();
-        sol = createEmptySol();
-        cost = Double.POSITIVE_INFINITY;
-        ArrayList<Double> deltas = new ArrayList<>();
-
-        /* Main loop, which repeats until the stopping criteria is reached. */
-        while (!constructiveStopCriteria()) {
-            double maxCost = Double.NEGATIVE_INFINITY, minCost = Double.POSITIVE_INFINITY;
-            cost = ObjFunction.evaluate(sol);
-            updateCL();
-
-            /*
-             * Explore all candidate elements to enter the solution, saving the
-             * highest and lowest cost variation achieved by the candidates.
-             */
-            for (E e : CL) {
-                Double deltaCost = ObjFunction.evaluateInsertionCost(e, sol);
-                deltas.add(deltaCost);
-                if (deltaCost < minCost)
-                    minCost = deltaCost;
-                if (deltaCost > maxCost)
-                    maxCost = deltaCost;
-            }
-
-            /*
-             * Among all candidates, insert into the RCL those with the highest
-             * performance using parameter alpha as threshold.
-             */
-            for (int i = 0; i < CL.size(); i++) {
-                Double deltaCost = deltas.get(i);
-                if (deltaCost <= minCost + alpha * (maxCost - minCost))
-                    RCL.add(CL.get(i));
-            }
-
-            /* Choose a candidate randomly from the RCL */
-            int rndIndex = rng.nextInt(RCL.size());
-            sol.add(CL.remove(rndIndex));
-            ObjFunction.evaluate(sol);
-            RCL.clear();
-            deltas.clear();
-        }
-
-        return sol;
+        if (hType == ConstructiveHeuristicType.Basic)
+            this.Heuristic = new BasicHeuristic();
+        else if (hType == ConstructiveHeuristicType.SampledGreedy)
+            this.Heuristic = new SampledGreedyHeuristic();
+        else if (hType == ConstructiveHeuristicType.Reactive)
+            this.Heuristic = new ReactiveHeuristic();
     }
 
     /**
@@ -202,7 +233,7 @@ public abstract class AbstractGRASP<E> {
     public Solution<E> solve() {
         bestSol = createEmptySol();
         for (int i = 0; i < iterations; i++) {
-            constructiveHeuristic();
+            Heuristic.newSolution();
             localSearch();
             if (bestSol.cost > sol.cost) {
                 bestSol = sol.clone();

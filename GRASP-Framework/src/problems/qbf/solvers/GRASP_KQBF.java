@@ -21,10 +21,12 @@ public class GRASP_KQBF extends GRASP_QBF {
      * @param iterations The number of iterations which the GRASP will be executed.
      * @param filename   Name of the file for which the objective function parameters
      *                   should be read.
+     * @param hType      The constructive heuristic type to be used in generating new solutions.
      * @throws IOException necessary for I/O operations.
      */
-    public GRASP_KQBF(Double alpha, Integer iterations, String filename) throws IOException {
-        super(alpha, iterations, filename);
+    public GRASP_KQBF(Double alpha, Integer iterations, String filename,
+                      ConstructiveHeuristicType hType) throws IOException {
+        super(alpha, iterations, filename, hType);
         objFunction = (KQBF) ObjFunction;
     }
 
@@ -58,7 +60,8 @@ public class GRASP_KQBF extends GRASP_QBF {
      */
     public static void main(String[] args) throws IOException {
         long startTime = System.currentTimeMillis();
-        GRASP_QBF grasp = new GRASP_KQBF(0.05, 100000, "instances/kqbf/kqbf020");
+        GRASP_QBF grasp = new GRASP_KQBF(0.05, 100000, "instances/kqbf/kqbf020",
+                ConstructiveHeuristicType.Basic);
         KSolution<Integer> bestSol = (KSolution<Integer>) grasp.solve();
         System.out.println("maxVal = " + bestSol);
         long endTime = System.currentTimeMillis();
