@@ -3,6 +3,7 @@
  */
 package metaheuristics.grasp;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -117,15 +118,22 @@ public abstract class AbstractGRASP<E> {
     public abstract Solution<E> localSearch();
 
     /**
+     * Creates an Evaluator based on the parmeters in the input file.
+     *
+     * @return The created evaluator.
+     */
+    protected abstract Evaluator<E> initEvaluator(String filename) throws IOException;
+
+    /**
      * Constructor for the AbstractGRASP class.
      *
-     * @param objFunction The objective function being minimized.
+     * @param filename    The file containing the objective function parameters.
      * @param alpha       The GRASP greediness-randomness parameter (within the range
      *                    [0,1])
      * @param iterations  The number of iterations which the GRASP will be executed.
      */
-    public AbstractGRASP(Evaluator<E> objFunction, Double alpha, Integer iterations) {
-        this.ObjFunction = objFunction;
+    public AbstractGRASP(String filename, Double alpha, Integer iterations) throws IOException {
+        this.ObjFunction = initEvaluator(filename);
         this.alpha = alpha;
         this.iterations = iterations;
     }

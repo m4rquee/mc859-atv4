@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import metaheuristics.grasp.AbstractGRASP;
+import problems.Evaluator;
 import problems.qbf.QBF_Inverse;
 import solutions.Solution;
 
@@ -30,7 +31,7 @@ public class GRASP_QBF extends AbstractGRASP<Integer> {
      * @throws IOException necessary for I/O operations.
      */
     public GRASP_QBF(Double alpha, Integer iterations, String filename) throws IOException {
-        super(new QBF_Inverse(filename), alpha, iterations);
+        super(filename, alpha, iterations);
     }
 
     /*
@@ -145,12 +146,17 @@ public class GRASP_QBF extends AbstractGRASP<Integer> {
         return null;
     }
 
+    @Override
+    protected Evaluator<Integer> initEvaluator(String filename) throws IOException {
+        return new QBF_Inverse(filename);
+    }
+
     /**
      * A main method used for testing the GRASP metaheuristic.
      */
     public static void main(String[] args) throws IOException {
         long startTime = System.currentTimeMillis();
-        GRASP_QBF grasp = new GRASP_QBF(0.05, 1000, "instances/qbf/qbf040");
+        GRASP_QBF grasp = new GRASP_QBF(0.05, 1000, "instances/qbf/qbf020");
         Solution<Integer> bestSol = grasp.solve();
         System.out.println("maxVal = " + bestSol);
         long endTime = System.currentTimeMillis();

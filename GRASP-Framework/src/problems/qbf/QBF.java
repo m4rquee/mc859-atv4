@@ -229,6 +229,20 @@ public class QBF implements Evaluator<Integer> {
     }
 
     /**
+     * Responsible for reading the coefficients matrix {@link #A}.
+     */
+    protected void read_coefs(StreamTokenizer stok, int _size) throws IOException {
+        A = new Double[_size][_size];
+        for (int i = 0; i < _size; i++)
+            for (int j = i; j < _size; j++) {
+                stok.nextToken();
+                A[i][j] = stok.nval;
+                if (j > i)
+                    A[j][i] = 0.0;
+            }
+    }
+
+    /**
      * Responsible for setting the QBF function parameters by reading the
      * necessary input from an external file. this method reads the domain's
      * dimension and matrix {@link #A}.
@@ -244,16 +258,8 @@ public class QBF implements Evaluator<Integer> {
 
         stok.nextToken();
         int _size = (int) stok.nval;
-        A = new Double[_size][_size];
 
-        for (int i = 0; i < _size; i++)
-            for (int j = i; j < _size; j++) {
-                stok.nextToken();
-                A[i][j] = stok.nval;
-                if (j > i)
-                    A[j][i] = 0.0;
-            }
-
+        read_coefs(stok, _size);
         return _size;
     }
 
@@ -292,23 +298,22 @@ public class QBF implements Evaluator<Integer> {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
-
-        QBF qbf = new QBF("instances/qbf/qbf040");
-        qbf.printMatrix();
+        QBF qbf = new QBF("instances/qbf/qbf020");
+        // qbf.printMatrix();
         double maxVal = Double.NEGATIVE_INFINITY;
 
         // evaluates randomly generated values for the domain, saving the best
         // one.
-        for (int i = 0; i < 10000000; i++) {
+        for (int i = 0; i < 1000000; i++) {
             for (int j = 0; j < qbf.size; j++) {
                 if (Math.random() < 0.5)
                     qbf.variables[j] = 0.0;
                 else
                     qbf.variables[j] = 1.0;
             }
-            //System.out.println("x = " + Arrays.toString(qbf.variables));
+            // System.out.println("x = " + Arrays.toString(qbf.variables));
             Double eval = qbf.evaluateQBF();
-            //System.out.println("f(x) = " + eval);
+            // System.out.println("f(x) = " + eval);
             if (maxVal < eval)
                 maxVal = eval;
         }
@@ -317,14 +322,14 @@ public class QBF implements Evaluator<Integer> {
         // evaluates the zero array.
         for (int j = 0; j < qbf.size; j++)
             qbf.variables[j] = 0.0;
-        System.out.println("x = " + Arrays.toString(qbf.variables));
-        System.out.println("f(x) = " + qbf.evaluateQBF());
+        // System.out.println("x = " + Arrays.toString(qbf.variables));
+        // System.out.println("f(x) = " + qbf.evaluateQBF());
 
         // evaluates the all-ones array.
         for (int j = 0; j < qbf.size; j++) {
             qbf.variables[j] = 1.0;
         }
-        System.out.println("x = " + Arrays.toString(qbf.variables));
-        System.out.println("f(x) = " + qbf.evaluateQBF());
+        // System.out.println("x = " + Arrays.toString(qbf.variables));
+        // System.out.println("f(x) = " + qbf.evaluateQBF());
     }
 }
