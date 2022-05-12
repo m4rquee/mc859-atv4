@@ -15,7 +15,7 @@ public class KSolution<E> extends Solution<E> {
 
     @Override
     public String toString() {
-        return "Solution: cost=[" + cost + "], weight=[" + this.weigth +
+        return "Solution: cost=[" + -cost + "], weight=[" + this.weigth +
                 "], size=[" + this.size() + "], elements=" + elementsString();
     }
 

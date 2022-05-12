@@ -34,15 +34,6 @@ public class GRASP_KQBF extends GRASP_QBF {
     }
 
     @Override
-    public ArrayList<Integer> makeCL() {
-        ArrayList<Integer> _CL = new ArrayList<>();
-        for (int i = 0; i < objFunction.getDomainSize(); i++)
-            if (objFunction.W[i] <= objFunction.W_max)
-                _CL.add(i);
-        return _CL;
-    }
-
-    @Override
     public void updateCL() {
         Double currWeight = ((KSolution<Integer>) sol).weigth;
         CL.removeIf(c -> // if adding this item will overpass the capacity
@@ -67,7 +58,7 @@ public class GRASP_KQBF extends GRASP_QBF {
      */
     public static void main(String[] args) throws IOException {
         long startTime = System.currentTimeMillis();
-        GRASP_QBF grasp = new GRASP_KQBF(0.05, 1000, "instances/kqbf/kqbf020");
+        GRASP_QBF grasp = new GRASP_KQBF(0.05, 100000, "instances/kqbf/kqbf020");
         KSolution<Integer> bestSol = (KSolution<Integer>) grasp.solve();
         System.out.println("maxVal = " + bestSol);
         long endTime = System.currentTimeMillis();

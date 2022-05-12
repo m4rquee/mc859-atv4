@@ -21,7 +21,7 @@ public class Solution<E> extends ArrayList<E> implements Cloneable {
 
     @Override
     public String toString() {
-        return "Solution: cost=[" + cost + "], size=[" + this.size() + "], elements=" + elementsString();
+        return "Solution: cost=[" + -cost + "], size=[" + this.size() + "], elements=" + elementsString();
     }
 
     @Override
