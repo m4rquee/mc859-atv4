@@ -329,9 +329,14 @@ public abstract class AbstractGRASP<E> {
      * @return The best feasible solution obtained throughout all iterations.
      */
     public Solution<E> solve() {
+        long startTime = System.currentTimeMillis();
         bestSol = createEmptySol();
         int interval = iterations / 10;
         for (int i = 0; i < iterations; i++) {
+            double totalTime = (System.currentTimeMillis() - startTime) / 1000.0;
+            if (verbose && totalTime % 60 == 0)
+                System.out.println("CurrTime = " + totalTime + " s");
+            if (totalTime > 1800) break;
             Heuristic.newSolution();
             localSearch();
             if (verbose && i % interval == 0)

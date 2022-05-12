@@ -59,8 +59,8 @@ public class GRASP_KQBF extends GRASP_QBF {
      */
     public static void main(String[] args) throws IOException {
         long startTime = System.currentTimeMillis();
-        GRASP_QBF grasp = new GRASP_KQBF(0.05, 100000, "instances/kqbf/kqbf020",
-                ConstructiveHeuristicType.Basic, false);
+        GRASP_QBF grasp = new GRASP_KQBF(0.05, 1000000000, "instances/kqbf/kqbf020",
+                ConstructiveHeuristicType.Basic, true);
         KSolution<Integer> bestSol = (KSolution<Integer>) grasp.solve();
         System.out.println("maxVal = " + bestSol);
         long endTime = System.currentTimeMillis();
