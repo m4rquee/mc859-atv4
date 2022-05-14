@@ -6,6 +6,7 @@ import solutions.KSolution;
 import solutions.Solution;
 
 import java.io.IOException;
+import java.util.Collections;
 
 public class GRASP_KQBF extends GRASP_QBF {
 
@@ -40,6 +41,7 @@ public class GRASP_KQBF extends GRASP_QBF {
         CL.removeIf(c -> // if adding this item will overpass the capacity
                 objFunction.W[c] > objFunction.W_max - currWeight
         );
+        Collections.shuffle(CL);
     }
 
     @Override

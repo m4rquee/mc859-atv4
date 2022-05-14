@@ -136,8 +136,10 @@ public abstract class AbstractGRASP<E> {
 
                 // Among all candidates, chose the smallest one to insert.
                 if (RCL.size() == 0) break;
-                RCL.clear();
                 sol.add(minE);
+                RCL.remove(minE);
+                CL.addAll(RCL); // put the not chosen back
+                RCL.clear();
                 ObjFunction.evaluate(sol);
             }
         }

@@ -24,3 +24,6 @@ hs_err_pid*
 
 # macos files
 .DS_Store
+
+# Out files
+*.out

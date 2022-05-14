@@ -2,6 +2,7 @@ package problems.qbf.solvers;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import metaheuristics.grasp.AbstractGRASP;
 import problems.Evaluator;
@@ -69,9 +70,7 @@ public class GRASP_QBF extends AbstractGRASP<Integer> {
      */
     @Override
     public void updateCL() {
-
-        // do nothing since all elements off the solution are viable candidates.
-
+        Collections.shuffle(CL);
     }
 
     /**
@@ -98,21 +97,12 @@ public class GRASP_QBF extends AbstractGRASP<Integer> {
     public Solution<Integer> localSearch() {
         double minDeltaCost;
         Integer bestCandIn = null, bestCandOut = null;
+        Collections.shuffle(sol);
 
         do {
             minDeltaCost = Double.POSITIVE_INFINITY;
             updateCL();
 
-            // Evaluate insertions
-            for (Integer candIn : CL) {
-                double deltaCost = ObjFunction.evaluateInsertionCost(candIn, sol);
-                if (deltaCost < minDeltaCost) {
-                    minDeltaCost = deltaCost;
-                    bestCandIn = candIn;
-                    bestCandOut = null;
-                    if (stImproving) break;
-                }
-            }
             // Evaluate removals
             for (Integer candOut : sol) {
                 double deltaCost = ObjFunction.evaluateRemovalCost(candOut, sol);
@@ -135,6 +125,16 @@ public class GRASP_QBF extends AbstractGRASP<Integer> {
                         if (stImproving) break outerLoop;
                     }
                 }
+            // Evaluate insertions
+            for (Integer candIn : CL) {
+                double deltaCost = ObjFunction.evaluateInsertionCost(candIn, sol);
+                if (deltaCost < minDeltaCost) {
+                    minDeltaCost = deltaCost;
+                    bestCandIn = candIn;
+                    bestCandOut = null;
+                    if (stImproving) break;
+                }
+            }
             // Implement the best move, if it reduces the solution cost.
             if (minDeltaCost < -Double.MIN_VALUE) {
                 if (bestCandOut != null) {
