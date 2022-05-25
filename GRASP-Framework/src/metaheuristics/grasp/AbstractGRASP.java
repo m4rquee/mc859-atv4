@@ -20,6 +20,8 @@ import solutions.Solution;
  */
 public abstract class AbstractGRASP<E> {
 
+    protected final long MAXIMUM_RUNNING_TIME_SECONDS = 30 * 60; // 30 minutes
+
     public enum ConstructiveHeuristicType {
         Basic, SampledGreedy, Reactive
     }
@@ -340,7 +342,7 @@ public abstract class AbstractGRASP<E> {
             double totalTime = (System.currentTimeMillis() - startTime) / 1000.0;
             if (verbose && totalTime % 60 == 0)
                 System.out.println("CurrTime = " + totalTime + " s");
-            if (totalTime > 1800) break;
+            if (totalTime > MAXIMUM_RUNNING_TIME_SECONDS) break;
             Heuristic.newSolution();
             localSearch();
             if (verbose && i % interval == 0)
