@@ -141,11 +141,11 @@ public abstract class AbstractGRASP<E> {
         this.iterations = iterations;
 
         if (hType == ConstructiveHeuristic.ConstructiveHeuristicType.Basic)
-            this.Heuristic = new BasicHeuristic<E>(param, this);
+            this.Heuristic = new BasicHeuristic<>(param, this);
         else if (hType == ConstructiveHeuristic.ConstructiveHeuristicType.SampledGreedy)
-            this.Heuristic = new SampledGreedyHeuristic<E>(param, this);
+            this.Heuristic = new SampledGreedyHeuristic<>(param, this);
         else if (hType == ConstructiveHeuristic.ConstructiveHeuristicType.Reactive)
-            this.Heuristic = new ReactiveHeuristic<E>(param, this);
+            this.Heuristic = new ReactiveHeuristic<>(param, this);
         else
             this.Heuristic = null; // will never occur
     }

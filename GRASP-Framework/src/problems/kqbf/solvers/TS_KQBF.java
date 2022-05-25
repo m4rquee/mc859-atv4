@@ -8,7 +8,6 @@ import solutions.Solution;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class TS_KQBF extends TS_QBF {
@@ -22,7 +21,7 @@ public class TS_KQBF extends TS_QBF {
             "kqbf100",
             "kqbf200",
             "kqbf400");
-    private static final List<Integer> TENURE_LIST = Arrays.asList(20, 30);
+    private static final List<Integer> TENURE_LIST = Arrays.asList(7, 14);
 
     private static final Integer iterations = 5000;
 
