@@ -252,7 +252,7 @@ public abstract class AbstractGRASP<E> {
      * feasible solution by selecting in a greedy-random fashion, candidate
      * elements to enter the solution.
      */
-    protected ConstructiveHeuristic Heuristic;
+    protected final ConstructiveHeuristic Heuristic;
 
     /**
      * Creates the Candidate List, which is an ArrayList of candidate elements
@@ -321,6 +321,8 @@ public abstract class AbstractGRASP<E> {
             this.Heuristic = new SampledGreedyHeuristic(param);
         else if (hType == ConstructiveHeuristicType.Reactive)
             this.Heuristic = new ReactiveHeuristic(param);
+        else
+            this.Heuristic = null; // will never occur
     }
 
     /**
