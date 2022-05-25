@@ -1,7 +1,8 @@
-package problems.qbf.solvers;
+package problems.kqbf.solvers;
 
 import problems.Evaluator;
-import problems.qbf.KQBF;
+import problems.kqbf.KQBF;
+import problems.qbf.solvers.GRASP_QBF;
 import solutions.KSolution;
 import solutions.Solution;
 

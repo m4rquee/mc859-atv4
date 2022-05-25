@@ -1,5 +1,6 @@
-package problems.qbf;
+package problems.kqbf;
 
+import problems.qbf.QBF_Inverse;
 import solutions.KSolution;
 import solutions.Solution;
 
