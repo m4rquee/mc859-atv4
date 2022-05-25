@@ -1,5 +1,6 @@
 package problems.kqbf.solvers;
 
+import metaheuristics.grasp.ConstructiveHeuristic;
 import problems.Evaluator;
 import problems.kqbf.KQBF;
 import problems.qbf.solvers.GRASP_QBF;
@@ -26,7 +27,7 @@ public class GRASP_KQBF extends GRASP_QBF {
      * @throws IOException necessary for I/O operations.
      */
     public GRASP_KQBF(Double param, Integer iterations, String filename,
-                      ConstructiveHeuristicType hType, boolean stImproving) throws IOException {
+                      ConstructiveHeuristic.ConstructiveHeuristicType hType, boolean stImproving) throws IOException {
         super(param, iterations, filename, hType, stImproving);
         objFunction = (KQBF) ObjFunction;
     }
@@ -63,7 +64,7 @@ public class GRASP_KQBF extends GRASP_QBF {
     public static void main(String[] args) throws IOException {
         long startTime = System.currentTimeMillis();
         GRASP_QBF grasp = new GRASP_KQBF(0.05, 1000000000, "instances/kqbf/kqbf020",
-                ConstructiveHeuristicType.Basic, true);
+                ConstructiveHeuristic.ConstructiveHeuristicType.Basic, true);
         KSolution<Integer> bestSol = (KSolution<Integer>) grasp.solve();
         System.out.println("maxVal = " + bestSol);
         long endTime = System.currentTimeMillis();

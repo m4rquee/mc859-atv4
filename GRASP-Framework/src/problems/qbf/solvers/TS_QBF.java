@@ -20,20 +20,24 @@ import solutions.Solution;
  */
 public class TS_QBF extends AbstractTS<Integer> {
 
+    protected final boolean stImproving;
+
     private final int fake = -1;
 
     /**
      * Constructor for the TS_QBF class. An inverse QBF objective function is
      * passed as argument for the superclass constructor.
      *
-     * @param tenure     The Tabu tenure parameter.
-     * @param iterations The number of iterations which the TS will be executed.
-     * @param filename   Name of the file for which the objective function parameters
-     *                   should be read.
+     * @param tenure      The Tabu tenure parameter.
+     * @param iterations  The number of iterations which the TS will be executed.
+     * @param filename    Name of the file for which the objective function parameters
+     *                    should be read.
+     * @param stImproving If should use the first-improving local search, or the best-improving.
      * @throws IOException necessary for I/O operations.
      */
-    public TS_QBF(int tenure, int iterations, String filename) throws IOException {
+    public TS_QBF(int tenure, int iterations, String filename, boolean stImproving) throws IOException {
         super(filename, tenure, iterations);
+        this.stImproving = stImproving;
     }
 
     @Override
@@ -105,26 +109,18 @@ public class TS_QBF extends AbstractTS<Integer> {
         Integer bestCandIn = null, bestCandOut = null;
         updateCL();
 
-        // Evaluate insertions
-        for (int candIn : CL) {
-            double deltaCost = ObjFunction.evaluateInsertionCost(candIn, sol);
-            if (!TL.contains(candIn) || sol.cost + deltaCost < bestSol.cost)
-                if (deltaCost < minDeltaCost) {
-                    minDeltaCost = deltaCost;
-                    bestCandIn = candIn;
-                }
-        }
         // Evaluate removals
         for (int candOut : sol) {
             double deltaCost = ObjFunction.evaluateRemovalCost(candOut, sol);
             if (!TL.contains(candOut) || sol.cost + deltaCost < bestSol.cost)
                 if (deltaCost < minDeltaCost) {
                     minDeltaCost = deltaCost;
-                    bestCandIn = null;
                     bestCandOut = candOut;
+                    if (stImproving) break;
                 }
         }
         // Evaluate exchanges
+        outerLoop:
         for (int candIn : CL) {
             for (int candOut : sol) {
                 double deltaCost = ObjFunction.evaluateExchangeCost(candIn, candOut, sol);
@@ -133,9 +129,22 @@ public class TS_QBF extends AbstractTS<Integer> {
                         minDeltaCost = deltaCost;
                         bestCandIn = candIn;
                         bestCandOut = candOut;
+                        if (stImproving) break outerLoop;
                     }
             }
         }
+        // Evaluate insertions
+        for (int candIn : CL) {
+            double deltaCost = ObjFunction.evaluateInsertionCost(candIn, sol);
+            if (!TL.contains(candIn) || sol.cost + deltaCost < bestSol.cost)
+                if (deltaCost < minDeltaCost) {
+                    minDeltaCost = deltaCost;
+                    bestCandIn = candIn;
+                    bestCandOut = null;
+                    if (stImproving) break;
+                }
+        }
+
         // Implement the best non-tabu move or an aspired one:
         TL.poll();
         if (bestCandOut != null) {
@@ -159,7 +168,7 @@ public class TS_QBF extends AbstractTS<Integer> {
      */
     public static void main(String[] args) throws IOException {
         long startTime = System.currentTimeMillis();
-        TS_QBF tabusearch = new TS_QBF(20, 1000, "instances/qbf/qbf100");
+        TS_QBF tabusearch = new TS_QBF(20, 1000, "instances/qbf/qbf100", false);
         Solution<Integer> bestSol = tabusearch.solve();
         System.out.println("maxVal = " + bestSol);
         long endTime = System.currentTimeMillis();

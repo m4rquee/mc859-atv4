@@ -1,4 +1,4 @@
-package metaheuristics;
+package metaheuristics.tabusearch;
 
 import java.io.IOException;
 import java.util.ArrayDeque;

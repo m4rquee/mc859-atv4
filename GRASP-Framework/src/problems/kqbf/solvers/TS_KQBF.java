@@ -40,7 +40,7 @@ public class TS_KQBF extends TS_QBF {
      * @throws IOException necessary for I/O operations.
      */
     public TS_KQBF(int tenure, Integer iterations, String filename, boolean stImproving) throws IOException {
-        super(tenure, iterations, filename);
+        super(tenure, iterations, filename, stImproving);
         objFunction = (KQBF) ObjFunction;
     }
 

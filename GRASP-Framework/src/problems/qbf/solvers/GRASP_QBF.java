@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import metaheuristics.grasp.AbstractGRASP;
+import metaheuristics.grasp.ConstructiveHeuristic;
 import problems.Evaluator;
 import problems.qbf.QBF_Inverse;
 import solutions.Solution;
@@ -20,7 +21,7 @@ import solutions.Solution;
  */
 public class GRASP_QBF extends AbstractGRASP<Integer> {
 
-    protected boolean stImproving;
+    protected final boolean stImproving;
 
     /**
      * Constructor for the GRASP_QBF class. An inverse QBF objective function is
@@ -35,7 +36,7 @@ public class GRASP_QBF extends AbstractGRASP<Integer> {
      * @throws IOException necessary for I/O operations.
      */
     public GRASP_QBF(Double param, Integer iterations, String filename,
-                     ConstructiveHeuristicType hType, boolean stImproving) throws IOException {
+                     ConstructiveHeuristic.ConstructiveHeuristicType hType, boolean stImproving) throws IOException {
         super(filename, param, iterations, hType);
         this.stImproving = stImproving;
     }
@@ -163,7 +164,7 @@ public class GRASP_QBF extends AbstractGRASP<Integer> {
     public static void main(String[] args) throws IOException {
         long startTime = System.currentTimeMillis();
         GRASP_QBF grasp = new GRASP_QBF(0.05, 100000, "instances/qbf/qbf020",
-                ConstructiveHeuristicType.Basic, false);
+                ConstructiveHeuristic.ConstructiveHeuristicType.Basic, false);
         Solution<Integer> bestSol = grasp.solve();
         System.out.println("maxVal = " + bestSol);
         long endTime = System.currentTimeMillis();
