@@ -5,7 +5,8 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 
 import metaheuristics.tabusearch.AbstractTS;
-import problems.qbf.QBF_Inverse;
+import problems.Evaluator;
+import problems.kqbf.KQBF;
 import solutions.Solution;
 
 
@@ -32,7 +33,12 @@ public class TS_QBF extends AbstractTS<Integer> {
      * @throws IOException necessary for I/O operations.
      */
     public TS_QBF(int tenure, int iterations, String filename) throws IOException {
-        super(new QBF_Inverse(filename), tenure, iterations);
+        super(filename, tenure, iterations);
+    }
+
+    @Override
+    protected Evaluator<Integer> initEvaluator(String filename) throws IOException {
+        return new KQBF(filename);
     }
 
     /* (non-Javadoc)
@@ -94,66 +100,58 @@ public class TS_QBF extends AbstractTS<Integer> {
      * composed by the neighborhood moves Insertion, Removal and 2-Exchange.
      */
     @Override
-    public Solution<Integer> neighborhoodMove() {
-        double minDeltaCost;
+    public void neighborhoodMove() {
+        double minDeltaCost = Double.POSITIVE_INFINITY;
         Integer bestCandIn = null, bestCandOut = null;
-
-        minDeltaCost = Double.POSITIVE_INFINITY;
         updateCL();
+
         // Evaluate insertions
         for (int candIn : CL) {
             double deltaCost = ObjFunction.evaluateInsertionCost(candIn, sol);
-            if (!TL.contains(candIn) || sol.cost + deltaCost < bestSol.cost) {
+            if (!TL.contains(candIn) || sol.cost + deltaCost < bestSol.cost)
                 if (deltaCost < minDeltaCost) {
                     minDeltaCost = deltaCost;
                     bestCandIn = candIn;
                 }
-            }
         }
         // Evaluate removals
         for (int candOut : sol) {
             double deltaCost = ObjFunction.evaluateRemovalCost(candOut, sol);
-            if (!TL.contains(candOut) || sol.cost + deltaCost < bestSol.cost) {
+            if (!TL.contains(candOut) || sol.cost + deltaCost < bestSol.cost)
                 if (deltaCost < minDeltaCost) {
                     minDeltaCost = deltaCost;
                     bestCandIn = null;
                     bestCandOut = candOut;
                 }
-            }
         }
         // Evaluate exchanges
         for (int candIn : CL) {
             for (int candOut : sol) {
                 double deltaCost = ObjFunction.evaluateExchangeCost(candIn, candOut, sol);
-                if ((!TL.contains(candIn) && !TL.contains(candOut)) || sol.cost + deltaCost < bestSol.cost) {
+                if (!(TL.contains(candIn) || TL.contains(candOut)) || sol.cost + deltaCost < bestSol.cost)
                     if (deltaCost < minDeltaCost) {
                         minDeltaCost = deltaCost;
                         bestCandIn = candIn;
                         bestCandOut = candOut;
                     }
-                }
             }
         }
-        // Implement the best non-tabu move
+        // Implement the best non-tabu move or an aspired one:
         TL.poll();
         if (bestCandOut != null) {
             sol.remove(bestCandOut);
             CL.add(bestCandOut);
             TL.add(bestCandOut);
-        } else {
+        } else
             TL.add(fake);
-        }
         TL.poll();
         if (bestCandIn != null) {
             sol.add(bestCandIn);
             CL.remove(bestCandIn);
             TL.add(bestCandIn);
-        } else {
+        } else
             TL.add(fake);
-        }
         ObjFunction.evaluate(sol);
-
-        return null;
     }
 
     /**

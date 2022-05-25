@@ -1,5 +1,6 @@
 package metaheuristics.tabusearch;
 
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Random;
@@ -125,20 +126,25 @@ public abstract class AbstractTS<E> {
      * the search continues by exploring moves which can make the current
      * solution worse. Cycling is prevented by not allowing forbidden
      * (tabu) moves that would otherwise backtrack to a previous solution.
-     *
-     * @return An local optimum solution.
      */
-    public abstract Solution<E> neighborhoodMove();
+    public abstract void neighborhoodMove();
+
+    /**
+     * Creates an Evaluator based on the parameters in the input file.
+     *
+     * @return The created evaluator.
+     */
+    protected abstract Evaluator<E> initEvaluator(String filename) throws IOException;
 
     /**
      * Constructor for the AbstractTS class.
      *
-     * @param objFunction The objective function being minimized.
-     * @param tenure      The Tabu tenure parameter.
-     * @param iterations  The number of iterations which the TS will be executed.
+     * @param filename   The file containing the objective function parameters.
+     * @param tenure     The Tabu tenure parameter.
+     * @param iterations The number of iterations which the TS will be executed.
      */
-    public AbstractTS(Evaluator<E> objFunction, Integer tenure, Integer iterations) {
-        this.ObjFunction = objFunction;
+    public AbstractTS(String filename, Integer tenure, Integer iterations) throws IOException {
+        this.ObjFunction = initEvaluator(filename);
         this.tenure = tenure;
         this.iterations = iterations;
     }
