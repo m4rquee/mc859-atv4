@@ -1,6 +1,8 @@
 package problems.kqbf;
 
 import problems.qbf.QBF_Inverse;
+import solutions.KSolution;
+import solutions.Solution;
 
 import java.io.*;
 
@@ -45,5 +47,15 @@ public class KQBF extends QBF_Inverse {
 
         read_coefs(stok, _size);
         return _size;
+    }
+
+    @Override
+    public Double evaluate(Solution<Integer> sol) {
+        setVariables(sol);
+        KSolution<Integer> aux = (KSolution<Integer>) sol;
+        aux.weigth = 0.0;
+        for (int i = 0; i < size; i++)
+            aux.weigth += variables[i] * W[i];
+        return sol.cost = evaluateQBF();
     }
 }
