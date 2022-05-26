@@ -9,7 +9,6 @@ import problems.Evaluator;
 import problems.kqbf.KQBF;
 import solutions.Solution;
 
-
 /**
  * Metaheuristic TS (Tabu Search) for obtaining an optimal solution to a QBF
  * (Quadractive Binary Function -- {@link #QuadracticBinaryFunction}).
@@ -22,7 +21,7 @@ public class TS_QBF extends AbstractTS<Integer> {
 
     public final boolean stImproving;
 
-    private final int fake = -1;
+    protected final int fake = -1;
 
     /**
      * Constructor for the TS_QBF class. An inverse QBF objective function is
@@ -30,9 +29,11 @@ public class TS_QBF extends AbstractTS<Integer> {
      *
      * @param tenure      The Tabu tenure parameter.
      * @param iterations  The number of iterations which the TS will be executed.
-     * @param filename    Name of the file for which the objective function parameters
+     * @param filename    Name of the file for which the objective function
+     *                    parameters
      *                    should be read.
-     * @param stImproving If should use the first-improving local search, or the best-improving.
+     * @param stImproving If should use the first-improving local search, or the
+     *                    best-improving.
      * @throws IOException necessary for I/O operations.
      */
     public TS_QBF(int tenure, int iterations, String filename, boolean stImproving) throws IOException {
@@ -45,7 +46,9 @@ public class TS_QBF extends AbstractTS<Integer> {
         return new KQBF(filename);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see metaheuristics.tabusearch.AbstractTS#makeCL()
      */
     @Override
@@ -56,7 +59,9 @@ public class TS_QBF extends AbstractTS<Integer> {
         return _CL;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see metaheuristics.tabusearch.AbstractTS#makeRCL()
      */
     @Override
@@ -64,7 +69,9 @@ public class TS_QBF extends AbstractTS<Integer> {
         return new ArrayList<>();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see metaheuristics.tabusearch.AbstractTS#makeTL()
      */
     @Override
@@ -75,7 +82,9 @@ public class TS_QBF extends AbstractTS<Integer> {
         return _TS;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see metaheuristics.tabusearch.AbstractTS#updateCL()
      */
     @Override
@@ -116,12 +125,12 @@ public class TS_QBF extends AbstractTS<Integer> {
                 if (deltaCost < minDeltaCost) {
                     minDeltaCost = deltaCost;
                     bestCandOut = candOut;
-                    if (stImproving) break;
+                    if (stImproving)
+                        break;
                 }
         }
         // Evaluate exchanges
-        outerLoop:
-        for (int candIn : CL) {
+        outerLoop: for (int candIn : CL) {
             for (int candOut : sol) {
                 double deltaCost = ObjFunction.evaluateExchangeCost(candIn, candOut, sol);
                 if (!(TL.contains(candIn) || TL.contains(candOut)) || sol.cost + deltaCost < bestSol.cost)
@@ -129,7 +138,8 @@ public class TS_QBF extends AbstractTS<Integer> {
                         minDeltaCost = deltaCost;
                         bestCandIn = candIn;
                         bestCandOut = candOut;
-                        if (stImproving) break outerLoop;
+                        if (stImproving)
+                            break outerLoop;
                     }
             }
         }
@@ -141,7 +151,8 @@ public class TS_QBF extends AbstractTS<Integer> {
                     minDeltaCost = deltaCost;
                     bestCandIn = candIn;
                     bestCandOut = null;
-                    if (stImproving) break;
+                    if (stImproving)
+                        break;
                 }
         }
 
