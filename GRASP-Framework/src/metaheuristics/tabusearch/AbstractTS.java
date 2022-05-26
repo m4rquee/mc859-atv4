@@ -9,7 +9,8 @@ import problems.Evaluator;
 import solutions.Solution;
 
 /**
- * Abstract class for metaheuristic Tabu Search. It consider a minimization problem.
+ * Abstract class for metaheuristic Tabu Search. It consider a minimization
+ * problem.
  *
  * @param <E> Generic type of the candidate to enter the solution.
  * @author ccavellucci, fusberti
@@ -52,7 +53,7 @@ public abstract class AbstractTS<E> {
     /**
      * the incumbent solution
      */
-    protected Solution<E> sol;
+    public Solution<E> sol;
 
     /**
      * the number of iterations the TS main loop executes.
@@ -194,7 +195,8 @@ public abstract class AbstractTS<E> {
             }
 
             /* Choose a candidate randomly from the RCL */
-            if (RCL.size() == 0) break;
+            if (RCL.size() == 0)
+                break;
             int rndIndex = rng.nextInt(RCL.size());
             sol.add(CL.remove(rndIndex));
             ObjFunction.evaluate(sol);
@@ -219,7 +221,8 @@ public abstract class AbstractTS<E> {
             double totalTime = (System.currentTimeMillis() - startTime) / 1000.0;
             if (verbose && totalTime % 60 == 0)
                 System.out.println("CurrTime = " + totalTime + " s");
-            if (totalTime > MAXIMUM_RUNNING_TIME_SECONDS) break;
+            if (totalTime > MAXIMUM_RUNNING_TIME_SECONDS)
+                break;
             neighborhoodMove();
             if (verbose && iter % interval == 0)
                 System.out.println("(Iter. " + iter + ") CurrSol = " + sol);
