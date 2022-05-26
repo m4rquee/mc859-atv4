@@ -219,8 +219,8 @@ public abstract class AbstractTS<E> {
         int interval = iterations / 10;
         for (iter = 0; iter < iterations; iter++) {
             double totalTime = (System.currentTimeMillis() - startTime) / 1000.0;
-            if (verbose && totalTime % 60 == 0)
-                System.out.println("CurrTime = " + totalTime + " s");
+            // if (verbose && totalTime % 60 == 0)
+                // System.out.println("CurrTime = " + totalTime + " s");
             if (totalTime > MAXIMUM_RUNNING_TIME_SECONDS)
                 break;
             neighborhoodMove();
