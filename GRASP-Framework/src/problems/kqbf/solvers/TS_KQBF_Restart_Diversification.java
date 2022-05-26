@@ -50,7 +50,7 @@ public class TS_KQBF_Restart_Diversification extends TS_KQBF {
         super.neighborhoodMove();
         for (var v : sol)
             FREQUENCY_MEMORY.get(v).Key++;
-        if (iter % RESTART_FREQUENCY == 0)
+        if ((iter + 1) % RESTART_FREQUENCY == 0)
             restart_sol();
     }
 
@@ -65,14 +65,12 @@ public class TS_KQBF_Restart_Diversification extends TS_KQBF {
         cost = Double.POSITIVE_INFINITY;
 
         CL = (ArrayList<Integer>) FREQUENCY_MEMORY.stream().map(t -> t.Value).collect(Collectors.toList());
-        while (!constructiveStopCriteria()) {
-            cost = sol.cost;
-            updateCL();
-
-            if (CL.size() == 0) break;
+        while (CL.size() > 0) {
             sol.add(CL.remove(0));
             ObjFunction.evaluate(sol);
+            updateCL();
         }
+        cost = sol.cost;
 
         // Reset the frequencies and reorder by variable name:
         for (var t : FREQUENCY_MEMORY)
