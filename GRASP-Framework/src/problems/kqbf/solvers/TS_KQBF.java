@@ -23,7 +23,7 @@ public class TS_KQBF extends TS_QBF {
             "kqbf400");
     protected static final List<Integer> TENURE_LIST = Arrays.asList(7, 14);
 
-    protected static final Integer iterations = 5000;
+    protected static final Integer iterations = 10000;
 
     protected final KQBF objFunction;
 

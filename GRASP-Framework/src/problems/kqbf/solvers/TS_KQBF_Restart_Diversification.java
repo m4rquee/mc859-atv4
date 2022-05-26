@@ -33,7 +33,7 @@ public class TS_KQBF_Restart_Diversification extends TS_KQBF {
         }
     }
 
-    private final int RESTART_FREQUENCY = 1000;
+    private final int RESTART_FREQUENCY;
 
     // How many times a variable appeared as true in a solution (stored as a <Freq, Var> pair):
     private final ArrayList<Tuple> FREQUENCY_MEMORY;
@@ -43,6 +43,7 @@ public class TS_KQBF_Restart_Diversification extends TS_KQBF {
         FREQUENCY_MEMORY = new ArrayList<>(this.ObjFunction.getDomainSize());
         for (int i = 0; i < this.ObjFunction.getDomainSize(); i++)
             FREQUENCY_MEMORY.add(new Tuple(0, i));
+        RESTART_FREQUENCY = iterations / 5;
     }
 
     @Override
