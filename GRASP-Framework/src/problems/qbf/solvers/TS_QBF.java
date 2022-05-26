@@ -20,7 +20,7 @@ import solutions.Solution;
  */
 public class TS_QBF extends AbstractTS<Integer> {
 
-    protected final boolean stImproving;
+    public final boolean stImproving;
 
     private final int fake = -1;
 

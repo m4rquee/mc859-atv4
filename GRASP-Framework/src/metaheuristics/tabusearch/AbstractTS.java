@@ -62,7 +62,7 @@ public abstract class AbstractTS<E> {
     /**
      * the tabu tenure.
      */
-    protected Integer tenure;
+    public final int tenure;
 
     /**
      * the Candidate List of elements to enter the solution.
@@ -78,6 +78,11 @@ public abstract class AbstractTS<E> {
      * the Tabu List of elements to enter the solution.
      */
     protected ArrayDeque<E> TL;
+
+    /**
+     * the current tabu search iteration.
+     */
+    protected int iter;
 
     /**
      * Creates the Candidate List, which is an ArrayList of candidate elements
@@ -210,18 +215,18 @@ public abstract class AbstractTS<E> {
         constructiveHeuristic();
         TL = makeTL();
         int interval = iterations / 10;
-        for (int i = 0; i < iterations; i++) {
+        for (iter = 0; iter < iterations; iter++) {
             double totalTime = (System.currentTimeMillis() - startTime) / 1000.0;
             if (verbose && totalTime % 60 == 0)
                 System.out.println("CurrTime = " + totalTime + " s");
             if (totalTime > MAXIMUM_RUNNING_TIME_SECONDS) break;
             neighborhoodMove();
-            if (verbose && i % interval == 0)
-                System.out.println("(Iter. " + i + ") CurrSol = " + sol);
+            if (verbose && iter % interval == 0)
+                System.out.println("(Iter. " + iter + ") CurrSol = " + sol);
             if (bestSol.cost > sol.cost) {
-                bestSol = new Solution<E>(sol);
+                bestSol = new Solution<>(sol);
                 if (verbose)
-                    System.out.println("(Iter. " + i + ") BestSol = " + bestSol);
+                    System.out.println("(Iter. " + iter + ") BestSol = " + bestSol);
             }
         }
 
