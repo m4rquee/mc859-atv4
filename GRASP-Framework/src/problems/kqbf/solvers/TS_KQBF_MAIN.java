@@ -27,7 +27,7 @@ public class TS_KQBF_MAIN {
         System.out.println("----------------------------------- Default method");
         for (var instance : INSTANCE_LIST)
             for (var tenure : TENURE_LIST)
-                for (boolean firstImproving : new boolean[] { true, false }) {
+                for (boolean firstImproving : new boolean[]{true, false}) {
                     var fileName = INSTANCES_DIR + instance;
                     run_algorithm(new TS_KQBF(tenure, fileName, firstImproving), fileName);
                 }
@@ -35,22 +35,23 @@ public class TS_KQBF_MAIN {
         // Probabilistic TS strategy:
         System.out.println("----------------------------------- Probabilistic TS strategy");
         for (var instance : INSTANCE_LIST)
-            for (var tenure : TENURE_LIST) {
-                var fileName = INSTANCES_DIR + instance;
-                run_algorithm(new TS_KQBF_Probabilistic(tenure, fileName), fileName);
-            }
+            for (var tenure : TENURE_LIST)
+                for (boolean firstImproving : new boolean[]{true, false}) {
+                    var fileName = INSTANCES_DIR + instance;
+                    run_algorithm(new TS_KQBF_Probabilistic(tenure, fileName, firstImproving), fileName);
+                }
 
         // TS with Diversification by Restart:
         System.out.println("----------------------------------- TS with Diversification by Restart");
         for (var instance : INSTANCE_LIST)
             for (var tenure : TENURE_LIST)
-                for (boolean firstImproving : new boolean[] { true, false }) {
+                for (boolean firstImproving : new boolean[]{true, false}) {
                     var fileName = INSTANCES_DIR + instance;
                     run_algorithm(new TS_KQBF_Restart_Diversification(tenure, fileName, firstImproving), fileName);
                 }
     }
 
-    private static void run_algorithm(TS_KQBF tabuSearch, String fileName) throws IOException {
+    private static void run_algorithm(TS_KQBF tabuSearch, String fileName) {
         long startTime = System.currentTimeMillis();
         System.out.println("\n\n=============================");
         Solution<Integer> bestSolution = tabuSearch.solve();

@@ -48,7 +48,7 @@ public class TS_QBF extends AbstractTS<Integer> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see metaheuristics.tabusearch.AbstractTS#makeCL()
      */
     @Override
@@ -61,7 +61,7 @@ public class TS_QBF extends AbstractTS<Integer> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see metaheuristics.tabusearch.AbstractTS#makeRCL()
      */
     @Override
@@ -71,7 +71,7 @@ public class TS_QBF extends AbstractTS<Integer> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see metaheuristics.tabusearch.AbstractTS#makeTL()
      */
     @Override
@@ -84,7 +84,7 @@ public class TS_QBF extends AbstractTS<Integer> {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see metaheuristics.tabusearch.AbstractTS#updateCL()
      */
     @Override
@@ -114,9 +114,13 @@ public class TS_QBF extends AbstractTS<Integer> {
      */
     @Override
     public void neighborhoodMove() {
+        updateCL();
+        _neighborhoodMove(CL);
+    }
+
+    protected void _neighborhoodMove(ArrayList<Integer> Neighborhood) {
         double minDeltaCost = Double.POSITIVE_INFINITY;
         Integer bestCandIn = null, bestCandOut = null;
-        updateCL();
 
         // Evaluate removals
         for (int candOut : sol) {
@@ -130,7 +134,8 @@ public class TS_QBF extends AbstractTS<Integer> {
                 }
         }
         // Evaluate exchanges
-        outerLoop: for (int candIn : CL) {
+        outerLoop:
+        for (int candIn : Neighborhood) {
             for (int candOut : sol) {
                 double deltaCost = ObjFunction.evaluateExchangeCost(candIn, candOut, sol);
                 if (!(TL.contains(candIn) || TL.contains(candOut)) || sol.cost + deltaCost < bestSol.cost)
@@ -144,7 +149,7 @@ public class TS_QBF extends AbstractTS<Integer> {
             }
         }
         // Evaluate insertions
-        for (int candIn : CL) {
+        for (int candIn : Neighborhood) {
             double deltaCost = ObjFunction.evaluateInsertionCost(candIn, sol);
             if (!TL.contains(candIn) || sol.cost + deltaCost < bestSol.cost)
                 if (deltaCost < minDeltaCost) {

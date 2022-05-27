@@ -33,7 +33,6 @@ public class TS_KQBF extends TS_QBF {
      *
      * @param tenure      A double hyperparameter used by the constructive
      *                    heuristics.
-     * @param iterations  The number of iterations which the TS will be executed.
      * @param filename    Name of the file for which the objective function
      *                    parameters
      *                    should be read.

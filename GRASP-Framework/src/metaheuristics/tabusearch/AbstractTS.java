@@ -168,7 +168,7 @@ public abstract class AbstractTS<E> {
 
         /* Main loop, which repeats until the stopping criteria is reached. */
         while (!constructiveStopCriteria()) {
-            double maxCost = Double.NEGATIVE_INFINITY, minCost = Double.POSITIVE_INFINITY;
+            double minCost = Double.POSITIVE_INFINITY;
             cost = sol.cost;
             updateCL();
 
@@ -180,8 +180,6 @@ public abstract class AbstractTS<E> {
                 Double deltaCost = ObjFunction.evaluateInsertionCost(c, sol);
                 if (deltaCost < minCost)
                     minCost = deltaCost;
-                if (deltaCost > maxCost)
-                    maxCost = deltaCost;
             }
 
             /*
@@ -190,7 +188,7 @@ public abstract class AbstractTS<E> {
              */
             for (E c : CL) {
                 Double deltaCost = ObjFunction.evaluateInsertionCost(c, sol);
-                if (deltaCost <= minCost)
+                if (deltaCost == minCost)
                     RCL.add(c);
             }
 

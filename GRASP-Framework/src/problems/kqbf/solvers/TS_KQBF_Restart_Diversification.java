@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 public class TS_KQBF_Restart_Diversification extends TS_KQBF {
 
-    private class Tuple implements Map.Entry<Integer, Integer> {
+    private static class Tuple implements Map.Entry<Integer, Integer> {
 
         protected int Key, Value;
 
@@ -59,7 +59,7 @@ public class TS_KQBF_Restart_Diversification extends TS_KQBF {
         // Sort by increasing frequency:
         FREQUENCY_MEMORY.sort(Map.Entry.comparingByKey());
 
-        // Restart the search but now using the least used variables:
+        // Restart the search, but now using the least used variables:
         sol = createEmptySol();
         TL.clear();
         RCL.clear();
