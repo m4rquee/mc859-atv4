@@ -33,8 +33,8 @@ public class GA_KQBF_MAIN {
                     run_algorithm(new GA_KQBF(population, mutation, fileName), fileName);
                 }
 
-        // 1st GA strategy:
-        System.out.println("----------------------------------- 1st GA strategy");
+        // GA with Uniform Crossover:
+        System.out.println("----------------------------------- GA with Uniform Crossover");
         for (var instance : INSTANCE_LIST)
             for (var population : POPULATION_LIST)
                 for (var mutation : MUTATION_LIST) {
@@ -42,8 +42,8 @@ public class GA_KQBF_MAIN {
                     run_algorithm(new GA_KQBF_Uniform_Crossover(population, mutation, fileName), fileName);
                 }
 
-        // 2nd GA strategy:
-        System.out.println("----------------------------------- 2nd GA strategy");
+        // GA with Adaptative Mutation:
+        System.out.println("----------------------------------- GA with Adaptative Mutation");
         for (var instance : INSTANCE_LIST)
             for (var population : POPULATION_LIST)
                 for (var mutation : MUTATION_LIST) {
