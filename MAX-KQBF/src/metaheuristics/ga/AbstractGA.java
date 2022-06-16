@@ -1,5 +1,6 @@
 package metaheuristics.ga;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -46,7 +47,7 @@ public abstract class AbstractGA<G extends Number, F> {
     /**
      * the size of the population
      */
-    protected int popSize;
+    public int popSize;
 
     /**
      * the size of the chromosome
@@ -56,7 +57,7 @@ public abstract class AbstractGA<G extends Number, F> {
     /**
      * the probability of performing a mutation
      */
-    protected double mutationRate;
+    public double mutationRate;
 
     /**
      * the best solution cost
@@ -119,15 +120,22 @@ public abstract class AbstractGA<G extends Number, F> {
     protected abstract void mutateGene(Chromosome chromosome, Integer locus);
 
     /**
+     * Creates an Evaluator based on the parameters in the input file.
+     *
+     * @return The created evaluator.
+     */
+    protected abstract Evaluator<F> initEvaluator(String filename) throws IOException;
+
+    /**
      * The constructor for the GA class.
      *
-     * @param objFunction  The objective function being optimized.
+     * @param filename   The file containing the objective function parameters.
      * @param generations  Number of generations to be executed.
      * @param popSize      Population size.
      * @param mutationRate The mutation rate.
      */
-    public AbstractGA(Evaluator<F> objFunction, Integer generations, Integer popSize, Double mutationRate) {
-        this.ObjFunction = objFunction;
+    public AbstractGA(String filename, Integer generations, Integer popSize, Double mutationRate) throws IOException {
+        this.ObjFunction = initEvaluator(filename);
         this.generations = generations;
         this.popSize = popSize;
         this.chromosomeSize = this.ObjFunction.getDomainSize();

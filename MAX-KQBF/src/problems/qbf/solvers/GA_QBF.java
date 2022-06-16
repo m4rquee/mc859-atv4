@@ -3,6 +3,8 @@ package problems.qbf.solvers;
 import java.io.IOException;
 
 import metaheuristics.ga.AbstractGA;
+import problems.Evaluator;
+import problems.kqbf.KQBF;
 import problems.qbf.QBF;
 import solutions.Solution;
 
@@ -27,7 +29,12 @@ public class GA_QBF extends AbstractGA<Integer, Integer> {
      * @throws IOException Necessary for I/O operations.
      */
     public GA_QBF(Integer generations, Integer popSize, Double mutationRate, String filename) throws IOException {
-        super(new QBF(filename), generations, popSize, mutationRate);
+        super(filename, generations, popSize, mutationRate);
+    }
+
+    @Override
+    protected Evaluator<Integer> initEvaluator(String filename) throws IOException {
+        return new KQBF(filename);
     }
 
     /**
