@@ -18,6 +18,7 @@ import solutions.Solution;
 public abstract class AbstractGA<G extends Number, F> {
 
     public class Chromosome extends ArrayList<G> {
+        public Double fitness = null;
     }
 
     public class Population extends ArrayList<Chromosome> {
@@ -129,7 +130,7 @@ public abstract class AbstractGA<G extends Number, F> {
     /**
      * The constructor for the GA class.
      *
-     * @param filename   The file containing the objective function parameters.
+     * @param filename     The file containing the objective function parameters.
      * @param generations  Number of generations to be executed.
      * @param popSize      Population size.
      * @param mutationRate The mutation rate.
@@ -164,7 +165,7 @@ public abstract class AbstractGA<G extends Number, F> {
             population = selectPopulation(mutants);
             bestChromosome = getBestChromosome(population);
 
-            if (fitness(bestChromosome) > bestSol.cost) {
+            if (bestChromosome.fitness > bestSol.cost) {
                 bestSol = decode(bestChromosome);
                 if (verbose)
                     System.out.println("(Gen. " + g + ") BestSol = " + bestSol);
@@ -181,8 +182,11 @@ public abstract class AbstractGA<G extends Number, F> {
      */
     protected Population initializePopulation() {
         Population population = new Population();
-        while (population.size() < popSize)
-            population.add(generateRandomChromosome());
+        while (population.size() < popSize) {
+            var aux = generateRandomChromosome();
+            population.add(aux);
+            aux.fitness = fitness(aux);
+        }
         return population;
     }
 
@@ -197,9 +201,8 @@ public abstract class AbstractGA<G extends Number, F> {
         double bestFitness = Double.NEGATIVE_INFINITY;
         Chromosome bestChromosome = null;
         for (Chromosome c : population) {
-            double fitness = fitness(c);
-            if (fitness > bestFitness) {
-                bestFitness = fitness;
+            if (c.fitness > bestFitness) {
+                bestFitness = c.fitness;
                 bestChromosome = c;
             }
         }
@@ -217,9 +220,8 @@ public abstract class AbstractGA<G extends Number, F> {
         double worseFitness = Double.POSITIVE_INFINITY;
         Chromosome worseChromosome = null;
         for (Chromosome c : population) {
-            double fitness = fitness(c);
-            if (fitness < worseFitness) {
-                worseFitness = fitness;
+            if (c.fitness < worseFitness) {
+                worseFitness = c.fitness;
                 worseChromosome = c;
             }
         }
@@ -240,7 +242,7 @@ public abstract class AbstractGA<G extends Number, F> {
         while (parents.size() < popSize) {
             int index1 = rng.nextInt(popSize), index2 = rng.nextInt(popSize);
             Chromosome parent1 = population.get(index1), parent2 = population.get(index2);
-            if (fitness(parent1) > fitness(parent2))
+            if (parent1.fitness > parent2.fitness)
                 parents.add(parent1);
             else
                 parents.add(parent2);
@@ -268,8 +270,13 @@ public abstract class AbstractGA<G extends Number, F> {
         Population offsprings = new Population();
 
         for (int i = 0; i < popSize; i = i + 2) {
-            Chromosome parent1 = parents.get(i);
-            Chromosome parent2 = parents.get(i + 1);
+            Chromosome parent1 = parents.get(i), parent2 = parents.get(i + 1);
+
+            if (parent1 == parent2) { // Save time as the offspring will be the same as the parents:
+                offsprings.add(parent1);
+                offsprings.add(parent2);
+                continue;
+            }
 
             int crosspoint1 = rng.nextInt(chromosomeSize + 1);
             int crosspoint2 = crosspoint1 + rng.nextInt((chromosomeSize + 1) - crosspoint1);
@@ -286,6 +293,8 @@ public abstract class AbstractGA<G extends Number, F> {
                     offspring2.add(parent2.get(j));
                 }
 
+            offspring1.fitness = fitness(offspring1);
+            offspring2.fitness = fitness(offspring2);
             offsprings.add(offspring1);
             offsprings.add(offspring2);
         }
@@ -303,10 +312,14 @@ public abstract class AbstractGA<G extends Number, F> {
      * @return The mutated offsprings.
      */
     protected Population mutate(Population offsprings) {
-        for (Chromosome c : offsprings)
-            for (int locus = 0; locus < chromosomeSize; locus++)
-                if (rng.nextDouble() < mutationRate)
-                    mutateGene(c, locus);
+        for (Chromosome c : offsprings) {
+            if (rng.nextDouble() < mutationRate) {
+                for (int locus = 0; locus < chromosomeSize; locus++)
+                    if (rng.nextDouble() < mutationRate / 10)
+                        mutateGene(c, locus);
+                c.fitness = fitness(c);
+            }
+        }
         return offsprings;
     }
 
@@ -321,7 +334,7 @@ public abstract class AbstractGA<G extends Number, F> {
      */
     protected Population selectPopulation(Population offsprings) {
         Chromosome worse = getWorseChromosome(offsprings);
-        if (fitness(worse) < fitness(bestChromosome)) {
+        if (worse.fitness < bestChromosome.fitness) {
             offsprings.remove(worse);
             offsprings.add(bestChromosome);
         }
