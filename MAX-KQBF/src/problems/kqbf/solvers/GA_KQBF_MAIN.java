@@ -39,7 +39,7 @@ public class GA_KQBF_MAIN {
             for (var population : POPULATION_LIST)
                 for (var mutation : MUTATION_LIST) {
                     var fileName = INSTANCES_DIR + instance;
-                    run_algorithm(new GA_KQBF(population, mutation, fileName), fileName);
+                    run_algorithm(new GA_KQBF_Uniform_Crossover(population, mutation, fileName), fileName);
                 }
 
         // 2nd GA strategy:
@@ -48,7 +48,7 @@ public class GA_KQBF_MAIN {
             for (var population : POPULATION_LIST)
                 for (var mutation : MUTATION_LIST) {
                     var fileName = INSTANCES_DIR + instance;
-                    run_algorithm(new GA_KQBF(population, mutation, fileName), fileName);
+                    run_algorithm(new GA_KQBF_Adaptative_Mutation(population, mutation, fileName), fileName);
                 }
     }
 
