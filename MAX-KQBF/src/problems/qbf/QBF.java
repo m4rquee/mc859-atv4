@@ -127,7 +127,7 @@ public class QBF implements Evaluator<Integer> {
      *
      * @param i Index of the element being inserted into the solution.
      * @return Ihe variation of the objective function resulting from the
-     * insertion.
+     *         insertion.
      */
     public Double evaluateInsertionQBF(int i) {
         if (variables[i] == 1)
@@ -154,7 +154,7 @@ public class QBF implements Evaluator<Integer> {
      *
      * @param i Index of the element being removed from the solution.
      * @return The variation of the objective function resulting from the
-     * removal.
+     *         removal.
      */
     public Double evaluateRemovalQBF(int i) {
         if (variables[i] == 0)
@@ -184,7 +184,7 @@ public class QBF implements Evaluator<Integer> {
      * @param out The index of the element that is considered exiting the
      *            solution.
      * @return The variation of the objective function resulting from the
-     * exchange.
+     *         exchange.
      */
     public Double evaluateExchangeQBF(int in, int out) {
         double sum = 0.0;
@@ -214,9 +214,23 @@ public class QBF implements Evaluator<Integer> {
      *
      * @param i index of the element being inserted into the solution.
      * @return the variation of the objective function resulting from the
-     * insertion.
+     *         insertion.
      */
-    private Double evaluateContributionQBF(int i) {
+    public Double evaluateContributionQBF(int i) {
+        Double sum = 0.0;
+
+        for (int j = 0; j < size; j++) {
+            if (i != j)
+                sum += variables[j] * (A[i][j] + A[j][i]);
+        }
+        sum += A[i][i];
+
+        return sum;
+    }
+
+    public Double evaluateContributionQBF(int i, Solution<Integer> sol) {
+        setVariables(sol);
+
         Double sum = 0.0;
 
         for (int j = 0; j < size; j++) {
