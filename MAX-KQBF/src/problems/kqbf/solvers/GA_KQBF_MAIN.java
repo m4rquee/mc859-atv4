@@ -17,7 +17,7 @@ public class GA_KQBF_MAIN {
             "kqbf100",
             "kqbf200",
             "kqbf400");
-    private static final List<Integer> POPULATION_LIST = Arrays.asList(100, 1000);
+    private static final List<Integer> POPULATION_LIST = Arrays.asList(100, 200);
     private static final List<Double> MUTATION_LIST = Arrays.asList(10.0 / 100.0, 20.0 / 100.0);
 
     /**
