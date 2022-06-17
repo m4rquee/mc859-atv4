@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import metaheuristics.ga.AbstractGA;
 import problems.Evaluator;
-import problems.kqbf.KQBF;
+import problems.qbf.QBF_Inverse;
 import solutions.Solution;
 
 /**
@@ -33,7 +33,7 @@ public class GA_QBF extends AbstractGA<Integer, Integer> {
 
     @Override
     protected Evaluator<Integer> initEvaluator(String filename) throws IOException {
-        return new KQBF(filename);
+        return new QBF_Inverse(filename);
     }
 
     /**
@@ -87,7 +87,7 @@ public class GA_QBF extends AbstractGA<Integer, Integer> {
      */
     @Override
     protected Double fitness(Chromosome chromosome) {
-        return decode(chromosome).cost;
+        return -decode(chromosome).cost;
     }
 
     /*
@@ -106,7 +106,7 @@ public class GA_QBF extends AbstractGA<Integer, Integer> {
      */
     public static void main(String[] args) throws IOException {
         long startTime = System.currentTimeMillis();
-        GA_QBF ga = new GA_QBF(1000, 100, 1.0 / 100.0, "instances/qbf/qbf100");
+        GA_QBF ga = new GA_QBF(1000, 1000, 10.0 / 100.0, "instances/qbf/qbf020");
         Solution<Integer> bestSol = ga.solve();
         System.out.println("maxVal = " + bestSol);
         long totalTime = System.currentTimeMillis() - startTime;

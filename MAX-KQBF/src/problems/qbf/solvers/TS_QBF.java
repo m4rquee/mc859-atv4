@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import metaheuristics.tabusearch.AbstractTS;
 import problems.Evaluator;
-import problems.kqbf.KQBF;
+import problems.qbf.QBF_Inverse;
 import solutions.Solution;
 
 /**
@@ -43,7 +43,7 @@ public class TS_QBF extends AbstractTS<Integer> {
 
     @Override
     protected Evaluator<Integer> initEvaluator(String filename) throws IOException {
-        return new KQBF(filename);
+        return new QBF_Inverse(filename);
     }
 
     /*
@@ -184,7 +184,7 @@ public class TS_QBF extends AbstractTS<Integer> {
      */
     public static void main(String[] args) throws IOException {
         long startTime = System.currentTimeMillis();
-        TS_QBF tabusearch = new TS_QBF(20, 1000, "instances/qbf/qbf100", false);
+        TS_QBF tabusearch = new TS_QBF(7, 1000, "instances/qbf/qbf020", false);
         Solution<Integer> bestSol = tabusearch.solve();
         System.out.println("maxVal = " + bestSol);
         long endTime = System.currentTimeMillis();
