@@ -7,12 +7,11 @@ import solutions.KSolution;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 
 class Contribution {
-    public Double contribution;
-    public Integer variable;
+    protected Double contribution;
+    protected Integer variable;
 
     public Contribution(Double contribution, Integer variable) {
         this.contribution = contribution;
@@ -22,11 +21,9 @@ class Contribution {
     public Double getContribution() {
         return contribution;
     }
-};
+}
 
 public class GA_KQBF extends GA_QBF {
-
-    protected static final Integer generations = 10000;
 
     /**
      * Constructor for the GA_QBF class. The QBF objective function is passed as
@@ -40,7 +37,8 @@ public class GA_KQBF extends GA_QBF {
      * @throws IOException Necessary for I/O operations.
      */
     public GA_KQBF(Integer popSize, Double mutationRate, String filename) throws IOException {
-        super(generations, popSize, mutationRate, filename);
+        super(0, popSize, mutationRate, filename);
+        generations = chromosomeSize * 10;
     }
 
     public double weight() {
@@ -61,71 +59,58 @@ public class GA_KQBF extends GA_QBF {
 
     @Override
     protected Chromosome generateRandomChromosome() {
-
         Chromosome chromosome = new Chromosome();
-        for (int i = 0; i < chromosomeSize; i++) {
+        for (int i = 0; i < chromosomeSize; i++)
             chromosome.add(rng.nextInt(2));
-        }
-
-        // Torna o cromossomo viável caso não seja
-        chromosome = fixChromosome(chromosome);
-
+        fixChromosome(chromosome); // make an invalid chromosome viable
         return chromosome;
     }
 
-    protected Double chromosomeWeight(Chromosome chromosome) {
-        Double chromosomeWeight = 0.0;
-        for (int index = 0; index < chromosomeSize; index++) {
-            chromosomeWeight += chromosome.get(index) * ((KQBF) ObjFunction).W[index];
-        }
-        return chromosomeWeight;
-    }
+    protected void fixChromosome(Chromosome chromosome) {
+        var decodedChromosome = (KSolution<Integer>) decode(chromosome);
+        double currWeight = decodedChromosome.weigth;
 
-    protected Chromosome fixChromosome(Chromosome chromosome) {
-        Double chromosomeWeight = chromosomeWeight(chromosome);
-
-        // Se o peso do cromossomo ultrapassa o peso da mochila, remove alguns items em
-        // ordem ordem crescente de benefício/peso
-        if (chromosomeWeight > ((KQBF) ObjFunction).W_max) {
-            // Armazena os items que estão na mochila e seu benefício/peso
-            ArrayList<Contribution> contributions = new ArrayList<Contribution>();
-            for (int index = 0; index < chromosomeSize; index++) {
-                if (chromosome.get(index) > 0.0) {
-                    contributions.add(
-                            new Contribution(((KQBF) ObjFunction).evaluateContributionQBF(index, decode(chromosome))
-                                    / ((KQBF) ObjFunction).W[index], index));
+        // Se o peso do cromossomo ultrapassar o peso da mochila, remove alguns items em
+        // ordem ordem crescente de benefício/peso:
+        KQBF auxRef = ((KQBF) ObjFunction);
+        if (currWeight > auxRef.W_max) {
+            // Armazena os items que estão na mochila e seu benefício/peso:
+            ArrayList<Contribution> contributions = new ArrayList<>();
+            for (int i = 0; i < chromosomeSize; i++)
+                if (chromosome.get(i) == 1.0) {
+                    var contribution = auxRef.evaluateContributionQBF(i, decodedChromosome) / auxRef.W[i];
+                    contributions.add(new Contribution(contribution, i));
                 }
-            }
 
-            // Ordena em ordem crescente
-            Collections.sort(contributions, Comparator.comparing(Contribution::getContribution));
-            // Remove os que menos contribuem até que o cromossomo seja viável
-            while (chromosomeWeight > ((KQBF) ObjFunction).W_max) {
-                chromosome.set(contributions.remove(0).variable, 0);
-                chromosomeWeight = chromosomeWeight(chromosome);
+            contributions.sort(Comparator.comparing(Contribution::getContribution)); // ordena em ordem crescente
+            // Remove os que menos contribuem até que o cromossomo seja viável:
+            while (currWeight > auxRef.W_max) {
+                var worstVar = contributions.remove(0);
+                chromosome.set(worstVar.variable, 0);
+                currWeight -= auxRef.W[worstVar.variable];
             }
         }
-
-        return chromosome;
     }
 
     @Override
     protected Population crossover(Population parents) {
-
         Population offsprings = new Population();
 
         for (int i = 0; i < popSize; i = i + 2) {
+            Chromosome parent1 = parents.get(i), parent2 = parents.get(i + 1);
 
-            Chromosome parent1 = parents.get(i);
-            Chromosome parent2 = parents.get(i + 1);
+            if (parent1 == parent2) { // Save time as the offspring will be the same as the parents:
+                offsprings.add(parent1);
+                offsprings.add(parent2);
+                continue;
+            }
 
             int crosspoint1 = rng.nextInt(chromosomeSize + 1);
             int crosspoint2 = crosspoint1 + rng.nextInt((chromosomeSize + 1) - crosspoint1);
 
-            Chromosome offspring1 = new Chromosome();
-            Chromosome offspring2 = new Chromosome();
+            Chromosome offspring1 = new Chromosome(), offspring2 = new Chromosome();
 
-            for (int j = 0; j < chromosomeSize; j++) {
+            for (int j = 0; j < chromosomeSize; j++)
                 if (j >= crosspoint1 && j < crosspoint2) {
                     offspring1.add(parent2.get(j));
                     offspring2.add(parent1.get(j));
@@ -133,19 +118,30 @@ public class GA_KQBF extends GA_QBF {
                     offspring1.add(parent1.get(j));
                     offspring2.add(parent2.get(j));
                 }
-            }
 
+            // Make the invalid chromosomes viable:
+            fixChromosome(offspring1);
+            fixChromosome(offspring2);
+
+            offspring1.fitness = fitness(offspring1);
+            offspring2.fitness = fitness(offspring2);
             offsprings.add(offspring1);
             offsprings.add(offspring2);
-
-        }
-
-        // Torna os cromossomos viáveis caso não sejam
-        for (Chromosome offspring : offsprings) {
-            offspring = fixChromosome(offspring);
         }
 
         return offsprings;
+    }
 
+    protected Population mutate(Population offsprings) {
+        for (Chromosome c : offsprings) {
+            if (rng.nextDouble() < mutationRate) {
+                for (int locus = 0; locus < chromosomeSize; locus++)
+                    if (rng.nextDouble() < mutationRate / 10)
+                        mutateGene(c, locus);
+                fixChromosome(c); // make the invalid chromosomes viable
+                c.fitness = fitness(c);
+            }
+        }
+        return offsprings;
     }
 }
