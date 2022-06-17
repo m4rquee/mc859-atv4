@@ -5,7 +5,6 @@ import java.io.IOException;
 import metaheuristics.ga.AbstractGA;
 import problems.Evaluator;
 import problems.kqbf.KQBF;
-import problems.qbf.QBF;
 import solutions.Solution;
 
 /**

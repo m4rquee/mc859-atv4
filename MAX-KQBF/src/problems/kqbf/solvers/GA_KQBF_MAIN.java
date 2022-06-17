@@ -17,8 +17,8 @@ public class GA_KQBF_MAIN {
             "kqbf100",
             "kqbf200",
             "kqbf400");
-    private static final List<Integer> POPULATION_LIST = Arrays.asList(10000, 100000);
-    private static final List<Double> MUTATION_LIST = Arrays.asList(1.0 / 100.0, 0.5 / 100.0);
+    private static final List<Integer> POPULATION_LIST = Arrays.asList(1000, 5000);
+    private static final List<Double> MUTATION_LIST = Arrays.asList(10.0 / 100.0, 20.0 / 100.0);
 
     /**
      * A main method used for testing the Genetic Algorithm metaheuristic.
