@@ -40,4 +40,21 @@ public class GA_KQBF extends GA_QBF {
         sol.weigth = 0.0;
         return sol;
     }
+
+    @Override
+    protected GA_QBF.Chromosome generateRandomChromosome() {
+        double weight = 0.0;
+        KQBF auxRef = (KQBF) ObjFunction;
+        Chromosome chromosome = new Chromosome();
+        for (int i = 0; i < chromosomeSize; i++) {
+            var locus = rng.nextInt(2);
+            if (locus == 1)  // Must check the capacity constraint:
+                if (weight + auxRef.W[i] > auxRef.W_max)
+                    locus = 0; // cannot add this item
+            chromosome.add(locus);
+            weight += locus * auxRef.W[i];
+        }
+
+        return chromosome;
+    }
 }

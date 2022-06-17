@@ -1,7 +1,6 @@
 package problems.qbf.solvers;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import metaheuristics.ga.AbstractGA;
 import problems.Evaluator;
@@ -74,18 +73,9 @@ public class GA_QBF extends AbstractGA<Integer, Integer> {
      */
     @Override
     protected Chromosome generateRandomChromosome() {
-        double weight = 0.0;
-        KQBF auxRef = (KQBF) ObjFunction;
         Chromosome chromosome = new Chromosome();
-        for (int i = 0; i < chromosomeSize; i++) {
-            var locus = rng.nextInt(2);
-            if (locus == 1)  // Must check the capacity constraint:
-                if (weight + auxRef.W[i] > auxRef.W_max)
-                    locus = 0; // cannot add this item
-            chromosome.add(locus);
-            weight += locus * auxRef.W[i];
-        }
-
+        for (int i = 0; i < chromosomeSize; i++)
+            chromosome.add(rng.nextInt(2));
         return chromosome;
     }
 
