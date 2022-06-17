@@ -19,6 +19,20 @@ public abstract class AbstractGA<G extends Number, F> {
 
     public class Chromosome extends ArrayList<G> {
         public Double fitness = null;
+
+        public Chromosome() {
+            super();
+        }
+
+        public Chromosome(Chromosome other) {
+            super(other);
+            fitness = other.fitness;
+        }
+
+        @Override
+        public Chromosome clone() {
+            return new Chromosome(this);
+        }
     }
 
     public class Population extends ArrayList<Chromosome> {
@@ -143,6 +157,10 @@ public abstract class AbstractGA<G extends Number, F> {
         this.mutationRate = mutationRate;
     }
 
+    public double getGenerations() {
+        return generations;
+    }
+
     /**
      * The GA mainframe. It starts by initializing a population of chromosomes.
      * It then enters a generational loop, in which each generation goes the
@@ -158,15 +176,19 @@ public abstract class AbstractGA<G extends Number, F> {
         System.out.println("(Gen. " + 0 + ") BestSol = " + bestSol);
 
         // Enter the main loop and repeats until a given number of generations:
+        int interval = generations / 10;
         for (int g = 1; g <= generations; g++) {
             Population parents = selectParents(population);
             Population offsprings = crossover(parents);
             Population mutants = mutate(offsprings);
             population = selectPopulation(mutants);
-            bestChromosome = getBestChromosome(population);
+            var popBestChromosome = getBestChromosome(population);
 
-            if (bestChromosome.fitness > bestSol.cost) {
-                bestSol = decode(bestChromosome);
+            if (verbose && g % interval == 0)
+                System.out.println("(Gen. " + g + ") CurrSol = " + decode(popBestChromosome));
+            if (popBestChromosome.fitness > bestChromosome.fitness) {
+                bestSol = decode(popBestChromosome);
+                bestChromosome = popBestChromosome.clone();
                 if (verbose)
                     System.out.println("(Gen. " + g + ") BestSol = " + bestSol);
             }
@@ -281,8 +303,7 @@ public abstract class AbstractGA<G extends Number, F> {
             int crosspoint1 = rng.nextInt(chromosomeSize + 1);
             int crosspoint2 = crosspoint1 + rng.nextInt((chromosomeSize + 1) - crosspoint1);
 
-            Chromosome offspring1 = new Chromosome();
-            Chromosome offspring2 = new Chromosome();
+            Chromosome offspring1 = new Chromosome(), offspring2 = new Chromosome();
 
             for (int j = 0; j < chromosomeSize; j++)
                 if (j >= crosspoint1 && j < crosspoint2) {
