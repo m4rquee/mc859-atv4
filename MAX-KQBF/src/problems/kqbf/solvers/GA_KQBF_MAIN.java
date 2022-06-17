@@ -17,7 +17,7 @@ public class GA_KQBF_MAIN {
             "kqbf100",
             "kqbf200",
             "kqbf400");
-    private static final List<Integer> POPULATION_LIST = Arrays.asList(1000, 5000);
+    private static final List<Integer> POPULATION_LIST = Arrays.asList(100, 1000);
     private static final List<Double> MUTATION_LIST = Arrays.asList(10.0 / 100.0, 20.0 / 100.0);
 
     /**
@@ -63,7 +63,7 @@ public class GA_KQBF_MAIN {
         System.out.println("instance: " + fileName);
         System.out.println("population: " + geneticAlgo.popSize);
         System.out.println("mutation: " + geneticAlgo.mutationRate);
-        System.out.println("generations: " + GA_KQBF.generations);
+        System.out.println("generations: " + geneticAlgo.getGenerations());
         System.out.println("Best Solution Found: " + bestSolution);
         System.out.println("Knapsack Weight of Best Solution: " + knapsackWeight);
         System.out.println("Time = " + (double) totalTime / (double) 1000 + " seg");
