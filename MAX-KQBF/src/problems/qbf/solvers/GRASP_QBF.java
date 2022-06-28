@@ -21,7 +21,7 @@ import solutions.Solution;
  */
 public class GRASP_QBF extends AbstractGRASP<Integer> {
 
-    protected final boolean stImproving;
+    public final boolean stImproving;
 
     /**
      * Constructor for the GRASP_QBF class. An inverse QBF objective function is

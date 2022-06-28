@@ -8,7 +8,10 @@ public abstract class ConstructiveHeuristic<E> {
 
     final AbstractGRASP<E> SOLVER;
 
+    public final double PARAM;
+
     public ConstructiveHeuristic(double param, AbstractGRASP<E> solver) {
+        PARAM = param;
         SOLVER = solver;
     }
 

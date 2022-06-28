@@ -77,7 +77,7 @@ public abstract class AbstractGRASP<E> {
      * feasible solution by selecting in a greedy-random fashion, candidate
      * elements to enter the solution.
      */
-    private final ConstructiveHeuristic<E> Heuristic;
+    public final ConstructiveHeuristic<E> Heuristic;
 
     /**
      * Creates the Candidate List, which is an ArrayList of candidate elements

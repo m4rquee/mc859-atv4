@@ -12,6 +12,8 @@ import java.util.Collections;
 
 public class GRASP_KQBF extends GRASP_QBF {
 
+    public static final int iterations = 10000;
+
     private final KQBF objFunction;
 
     /**
@@ -19,14 +21,13 @@ public class GRASP_KQBF extends GRASP_QBF {
      * passed as argument for the superclass constructor.
      *
      * @param param       A double hyperparameter used by the constructive heuristics.
-     * @param iterations  The number of iterations which the GRASP will be executed.
      * @param filename    Name of the file for which the objective function parameters
      *                    should be read.
      * @param hType       The constructive heuristic type to be used in generating new solutions.
      * @param stImproving If should use the first-improving local search, or the best-improving.
      * @throws IOException necessary for I/O operations.
      */
-    public GRASP_KQBF(Double param, Integer iterations, String filename,
+    public GRASP_KQBF(Double param, String filename,
                       ConstructiveHeuristic.ConstructiveHeuristicType hType, boolean stImproving) throws IOException {
         super(param, iterations, filename, hType, stImproving);
         objFunction = (KQBF) ObjFunction;
@@ -58,12 +59,16 @@ public class GRASP_KQBF extends GRASP_QBF {
         return super.localSearch(); // will only look for exchanges for items that already fit the knapsack
     }
 
+    public double weight() {
+        return ((KSolution<Integer>) bestSol).weigth;
+    }
+
     /**
      * A main method used for testing the GRASP metaheuristic.
      */
     public static void main(String[] args) throws IOException {
         long startTime = System.currentTimeMillis();
-        GRASP_QBF grasp = new GRASP_KQBF(0.05, 1000000000, "instances/kqbf/kqbf020",
+        GRASP_QBF grasp = new GRASP_KQBF(0.05, "instances/kqbf/kqbf020",
                 ConstructiveHeuristic.ConstructiveHeuristicType.Basic, true);
         KSolution<Integer> bestSol = (KSolution<Integer>) grasp.solve();
         System.out.println("maxVal = " + bestSol);
