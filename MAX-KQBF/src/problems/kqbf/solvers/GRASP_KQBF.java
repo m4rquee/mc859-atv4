@@ -33,6 +33,24 @@ public class GRASP_KQBF extends GRASP_QBF {
         objFunction = (KQBF) ObjFunction;
     }
 
+    /**
+     * Constructor for the GRASP_KQBF class. An inverse QBF objective function is
+     * passed as argument for the superclass constructor.
+     *
+     * @param param       A double hyperparameter used by the constructive heuristics.
+     * @param haltCost    The solver will halt only after reaching this  value.
+     * @param filename    Name of the file for which the objective function parameters
+     *                    should be read.
+     * @param hType       The constructive heuristic type to be used in generating new solutions.
+     * @param stImproving If should use the first-improving local search, or the best-improving.
+     * @throws IOException necessary for I/O operations.
+     */
+    public GRASP_KQBF(Double param, Double haltCost, String filename,
+                      ConstructiveHeuristic.ConstructiveHeuristicType hType, boolean stImproving) throws IOException {
+        super(param, haltCost, filename, hType, stImproving);
+        objFunction = (KQBF) ObjFunction;
+    }
+
     @Override
     protected Evaluator<Integer> initEvaluator(String filename) throws IOException {
         return new KQBF(filename);

@@ -19,6 +19,8 @@ import solutions.Solution;
  */
 public abstract class AbstractGRASP<E> {
 
+    private final double HALT_COST;
+
     protected final long MAXIMUM_RUNNING_TIME_SECONDS = 30 * 60; // 30 minutes
 
     /**
@@ -139,6 +141,31 @@ public abstract class AbstractGRASP<E> {
                          ConstructiveHeuristic.ConstructiveHeuristicType hType) throws IOException {
         this.ObjFunction = initEvaluator(filename);
         this.iterations = iterations;
+        HALT_COST = Double.MAX_VALUE;
+
+        if (hType == ConstructiveHeuristic.ConstructiveHeuristicType.Basic)
+            this.Heuristic = new BasicHeuristic<>(param, this);
+        else if (hType == ConstructiveHeuristic.ConstructiveHeuristicType.SampledGreedy)
+            this.Heuristic = new SampledGreedyHeuristic<>(param, this);
+        else if (hType == ConstructiveHeuristic.ConstructiveHeuristicType.Reactive)
+            this.Heuristic = new ReactiveHeuristic<>(param, this);
+        else
+            this.Heuristic = null; // will never occur
+    }
+
+    /**
+     * Constructor for the AbstractGRASP class.
+     *
+     * @param filename The file containing the objective function parameters.
+     * @param param    A double hyperparameter used by the constructive heuristics.
+     * @param haltCost The solver will halt only after reaching this  value.
+     * @param hType    The constructive heuristic type to be used in generating new solutions.
+     */
+    public AbstractGRASP(String filename, Double param, Double haltCost,
+                         ConstructiveHeuristic.ConstructiveHeuristicType hType) throws IOException {
+        this.ObjFunction = initEvaluator(filename);
+        this.iterations = Integer.MAX_VALUE;
+        HALT_COST = haltCost;
 
         if (hType == ConstructiveHeuristic.ConstructiveHeuristicType.Basic)
             this.Heuristic = new BasicHeuristic<>(param, this);
@@ -175,6 +202,7 @@ public abstract class AbstractGRASP<E> {
                 if (verbose)
                     System.out.println("(Iter. " + i + ") BestSol = " + bestSol);
             }
+            if (-bestSol.cost >= HALT_COST) break;
         }
 
         return bestSol;
