@@ -1,6 +1,7 @@
 package metaheuristics.grasp;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class BasicHeuristic<E> extends ConstructiveHeuristic<E> {
 
@@ -8,6 +9,8 @@ public class BasicHeuristic<E> extends ConstructiveHeuristic<E> {
      * the GRASP greediness-randomness parameter
      */
     protected Double alpha;
+
+    protected final Random rng = new Random(System.currentTimeMillis());
 
     /**
      * @param alpha The GRASP greediness-randomness parameter (within the range
@@ -57,7 +60,7 @@ public class BasicHeuristic<E> extends ConstructiveHeuristic<E> {
 
             /* Choose a candidate randomly from the RCL */
             if (SOLVER.RCL.size() == 0) break;
-            int rndIndex = AbstractGRASP.rng.nextInt(SOLVER.RCL.size());
+            int rndIndex = rng.nextInt(SOLVER.RCL.size());
             SOLVER.sol.add(SOLVER.CL.remove(rndIndex));
             SOLVER.ObjFunction.evaluate(SOLVER.sol);
             SOLVER.RCL.clear();

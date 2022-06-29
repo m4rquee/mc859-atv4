@@ -21,7 +21,7 @@ public abstract class AbstractGRASP<E> {
 
     private final double HALT_COST;
 
-    protected final long MAXIMUM_RUNNING_TIME_SECONDS = 30 * 60; // 30 minutes
+    protected final long MAXIMUM_RUNNING_TIME_SECONDS = 1 * 60; // 1 minutes
 
     /**
      * flag that indicates whether the code should print more information on
@@ -32,7 +32,7 @@ public abstract class AbstractGRASP<E> {
     /**
      * a random number generator
      */
-    static Random rng = new Random(42);
+    protected final Random rng = new Random(System.currentTimeMillis());
 
     /**
      * the objective function being optimized
@@ -73,6 +73,11 @@ public abstract class AbstractGRASP<E> {
      * the Restricted Candidate List of elements to enter the solution.
      */
     protected ArrayList<E> RCL;
+
+    /**
+     * the current GRASP iteration.
+     */
+    public int iter;
 
     /**
      * The GRASP constructive heuristic, which is responsible for building a
@@ -188,19 +193,19 @@ public abstract class AbstractGRASP<E> {
         long startTime = System.currentTimeMillis();
         bestSol = createEmptySol();
         int interval = iterations / 10;
-        for (int i = 0; i < iterations; i++) {
+        for (iter = 0; iter < iterations; iter++) {
             double totalTime = (System.currentTimeMillis() - startTime) / 1000.0;
             // if (verbose && totalTime % 60 == 0)
-                // System.out.println("CurrTime = " + totalTime + " s");
+            // System.out.println("CurrTime = " + totalTime + " s");
             if (totalTime > MAXIMUM_RUNNING_TIME_SECONDS) break;
             Heuristic.newSolution();
             localSearch();
-            if (verbose && i % interval == 0)
-                System.out.println("(Iter. " + i + ") CurrSol = " + sol);
+            if (verbose && iter % interval == 0)
+                System.out.println("(Iter. " + iter + ") CurrSol = " + sol);
             if (bestSol.cost > sol.cost) {
                 bestSol = sol.clone();
                 if (verbose)
-                    System.out.println("(Iter. " + i + ") BestSol = " + bestSol);
+                    System.out.println("(Iter. " + iter + ") BestSol = " + bestSol);
             }
             if (-bestSol.cost >= HALT_COST) break;
         }

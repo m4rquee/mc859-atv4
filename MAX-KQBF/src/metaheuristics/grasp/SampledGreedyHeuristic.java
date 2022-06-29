@@ -1,11 +1,15 @@
 package metaheuristics.grasp;
 
+import java.util.Random;
+
 public class SampledGreedyHeuristic<E> extends ConstructiveHeuristic<E> {
 
     /**
      * the size of the sampled RCL
      */
     private final int p;
+
+    protected final Random rng = new Random(System.currentTimeMillis());
 
     SampledGreedyHeuristic(double p, AbstractGRASP<E> solver) {
         super(p, solver);
@@ -29,7 +33,7 @@ public class SampledGreedyHeuristic<E> extends ConstructiveHeuristic<E> {
             int sampleSize = Math.min(p, SOLVER.CL.size());
             double minCost = Double.POSITIVE_INFINITY;
             for (int i = 0; i < sampleSize; i++) {
-                E e = SOLVER.CL.remove(AbstractGRASP.rng.nextInt(SOLVER.CL.size()));
+                E e = SOLVER.CL.remove(rng.nextInt(SOLVER.CL.size()));
                 SOLVER.RCL.add(e);
                 double delta = SOLVER.ObjFunction.evaluateInsertionCost(e, SOLVER.sol);
                 if (delta < minCost) {

@@ -47,7 +47,7 @@ public abstract class AbstractGA<G extends Number, F> {
     /**
      * a random number generator
      */
-    public static final Random rng = new Random(42);
+    protected final Random rng = new Random(System.currentTimeMillis());
 
     /**
      * the objective function being optimized

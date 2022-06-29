@@ -1,12 +1,15 @@
 package metaheuristics.grasp;
 
 import java.util.Arrays;
+import java.util.Random;
 
 public class ReactiveHeuristic<E> extends BasicHeuristic<E> {
 
     final double[] alphas, pdf, solSum, solCount, prefixSum;
     final int n_alpha;
     int alphaIndex;
+
+    protected final Random rng = new Random(System.currentTimeMillis());
 
     ReactiveHeuristic(double param, AbstractGRASP<E> solver) {
         super(param, solver);
@@ -28,7 +31,7 @@ public class ReactiveHeuristic<E> extends BasicHeuristic<E> {
         prefixSum[0] = pdf[0];
         for (int i = 1; i < n_alpha; i++)
             prefixSum[i] = prefixSum[i - 1] + pdf[i];
-        double random = AbstractGRASP.rng.nextDouble();
+        double random = rng.nextDouble();
         alphaIndex = -(Arrays.binarySearch(prefixSum, random) + 1);
         alpha = alphas[alphaIndex];
     }
