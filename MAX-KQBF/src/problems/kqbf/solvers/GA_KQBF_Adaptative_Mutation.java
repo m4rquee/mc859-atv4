@@ -10,6 +10,10 @@ public class GA_KQBF_Adaptative_Mutation extends GA_KQBF {
         super(popSize, mutationRate, filename);
     }
 
+    public GA_KQBF_Adaptative_Mutation(Double haltCost, Integer popSize, Double mutationRate, String filename) throws IOException {
+        super(haltCost, popSize, mutationRate, filename);
+    }
+
     @Override
     protected Population mutate(Population offsprings) {
         Double sumFitness = 0.0, meanFitness;

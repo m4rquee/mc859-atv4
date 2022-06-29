@@ -53,7 +53,7 @@ public class TS_KQBF_MAIN {
     private static double run_algorithm(int iter, TS_KQBF tabuSearch, String fileName) {
         long startTime = System.currentTimeMillis();
         System.out.println("\n\n============================= " + iter);
-        Solution<Integer> bestSolution = tabuSearch.solve();
+        var bestSolution = tabuSearch.solve();
         double knapsackWeight = tabuSearch.weight();
         long endTime = System.currentTimeMillis();
         long totalTime = endTime - startTime;
@@ -64,7 +64,7 @@ public class TS_KQBF_MAIN {
         System.out.println("iterations: " + (tabuSearch.iter + 1));
         System.out.println("Best Solution Found: " + bestSolution);
         System.out.println("Knapsack Weight of Best Solution: " + knapsackWeight);
-        System.out.println("Time = " + (double) totalTime / (double) 1000 + " seg");
+        System.out.println("Time = " + (double) totalTime / 1000 + " seg");
         return (double) totalTime / 1000;
     }
 }

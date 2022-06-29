@@ -41,6 +41,22 @@ public class GA_KQBF extends GA_QBF {
         generations = chromosomeSize * 10;
     }
 
+    /**
+     * Constructor for the GA_QBF class. The QBF objective function is passed as
+     * argument for the superclass constructor.
+     *
+     * @param haltCost     The solver will halt only after reaching this  value.
+     * @param popSize      Size of the population.
+     * @param mutationRate The mutation rate.
+     * @param filename     Name of the file for which the objective function
+     *                     parameters
+     *                     should be read.
+     * @throws IOException Necessary for I/O operations.
+     */
+    public GA_KQBF(Double haltCost, Integer popSize, Double mutationRate, String filename) throws IOException {
+        super(haltCost, popSize, mutationRate, filename);
+    }
+
     public double weight() {
         return ((KSolution<Integer>) bestSol).weigth;
     }

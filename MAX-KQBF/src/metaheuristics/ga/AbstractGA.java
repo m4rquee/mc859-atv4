@@ -38,6 +38,10 @@ public abstract class AbstractGA<G extends Number, F> {
     public class Population extends ArrayList<Chromosome> {
     }
 
+    private final double HALT_COST;
+
+    protected final long MAXIMUM_RUNNING_TIME_SECONDS = 1 * 60; // 1 minutes
+
     /**
      * flag that indicates whether the code should print more information on
      * screen
@@ -155,6 +159,24 @@ public abstract class AbstractGA<G extends Number, F> {
         this.popSize = popSize;
         this.chromosomeSize = this.ObjFunction.getDomainSize();
         this.mutationRate = mutationRate;
+        HALT_COST = Double.MAX_VALUE;
+    }
+
+    /**
+     * The constructor for the GA class.
+     *
+     * @param filename     The file containing the objective function parameters.
+     * @param haltCost     The solver will halt only after reaching this  value.
+     * @param popSize      Population size.
+     * @param mutationRate The mutation rate.
+     */
+    public AbstractGA(String filename, double haltCost, Integer popSize, Double mutationRate) throws IOException {
+        this.ObjFunction = initEvaluator(filename);
+        this.generations = Integer.MAX_VALUE;
+        this.popSize = popSize;
+        this.chromosomeSize = this.ObjFunction.getDomainSize();
+        this.mutationRate = mutationRate;
+        HALT_COST = haltCost;
     }
 
     public double getGenerations() {
@@ -170,6 +192,7 @@ public abstract class AbstractGA<G extends Number, F> {
      * @return The best feasible solution obtained throughout all iterations.
      */
     public Solution<F> solve() {
+        long startTime = System.currentTimeMillis();
         Population population = initializePopulation(); // starts the initial population
         bestChromosome = getBestChromosome(population);
         bestSol = decode(bestChromosome);
@@ -178,6 +201,11 @@ public abstract class AbstractGA<G extends Number, F> {
         // Enter the main loop and repeats until a given number of generations:
         int interval = generations / 10;
         for (int g = 1; g <= generations; g++) {
+            double totalTime = (System.currentTimeMillis() - startTime) / 1000.0;
+            // if (verbose && totalTime % 60 == 0)
+            // System.out.println("CurrTime = " + totalTime + " s");
+            if (totalTime > MAXIMUM_RUNNING_TIME_SECONDS)
+                break;
             Population parents = selectParents(population);
             Population offsprings = crossover(parents);
             Population mutants = mutate(offsprings);
@@ -192,6 +220,7 @@ public abstract class AbstractGA<G extends Number, F> {
                 if (verbose)
                     System.out.println("(Gen. " + g + ") BestSol = " + bestSol);
             }
+            if (-bestSol.cost >= HALT_COST) break;
         }
 
         return bestSol;

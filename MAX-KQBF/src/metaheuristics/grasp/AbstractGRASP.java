@@ -166,7 +166,7 @@ public abstract class AbstractGRASP<E> {
      * @param haltCost The solver will halt only after reaching this  value.
      * @param hType    The constructive heuristic type to be used in generating new solutions.
      */
-    public AbstractGRASP(String filename, Double param, Double haltCost,
+    public AbstractGRASP(String filename, Double param, double haltCost,
                          ConstructiveHeuristic.ConstructiveHeuristicType hType) throws IOException {
         this.ObjFunction = initEvaluator(filename);
         this.iterations = Integer.MAX_VALUE;

@@ -31,6 +31,21 @@ public class GA_QBF extends AbstractGA<Integer, Integer> {
         super(filename, generations, popSize, mutationRate);
     }
 
+    /**
+     * Constructor for the GA_QBF class. The QBF objective function is passed as
+     * argument for the superclass constructor.
+     *
+     * @param haltCost     The solver will halt only after reaching this  value.
+     * @param popSize      Size of the population.
+     * @param mutationRate The mutation rate.
+     * @param filename     Name of the file for which the objective function parameters
+     *                     should be read.
+     * @throws IOException Necessary for I/O operations.
+     */
+    public GA_QBF(Double haltCost, Integer popSize, Double mutationRate, String filename) throws IOException {
+        super(filename, haltCost, popSize, mutationRate);
+    }
+
     @Override
     protected Evaluator<Integer> initEvaluator(String filename) throws IOException {
         return new QBF_Inverse(filename);

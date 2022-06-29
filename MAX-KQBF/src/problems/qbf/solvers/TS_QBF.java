@@ -54,7 +54,7 @@ public class TS_QBF extends AbstractTS<Integer> {
      *                    best-improving.
      * @throws IOException necessary for I/O operations.
      */
-    public TS_QBF(int tenure, double haltCost, String filename, boolean stImproving) throws IOException {
+    public TS_QBF(int tenure, Double haltCost, String filename, boolean stImproving) throws IOException {
         super(filename, tenure, haltCost);
         this.stImproving = stImproving;
     }

@@ -3,20 +3,22 @@ package problems.kqbf.solvers;
 import solutions.Solution;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class GA_KQBF_MAIN {
 
     private static final String INSTANCES_DIR = "instances/kqbf/";
     private static final List<String> INSTANCE_LIST = Arrays.asList(
-            "kqbf020",
-            "kqbf040",
             "kqbf060",
-            "kqbf080",
             "kqbf100",
-            "kqbf200",
-            "kqbf400");
+            "kqbf200");
+
+    private static final Map<String, Double> HALT_COSTS =
+            Map.of("kqbf060", 400.0, "kqbf100", 1000.0, "kqbf200", 3200.0);
+
     private static final List<Integer> POPULATION_LIST = Arrays.asList(100, 200);
     private static final List<Double> MUTATION_LIST = Arrays.asList(10.0 / 100.0, 20.0 / 100.0);
 
@@ -24,38 +26,40 @@ public class GA_KQBF_MAIN {
      * A main method used for testing the Genetic Algorithm metaheuristic.
      */
     public static void main(String[] args) throws IOException {
-        // Default method:
-        System.out.println("----------------------------------- Default method");
-        for (var instance : INSTANCE_LIST)
-            for (var population : POPULATION_LIST)
-                for (var mutation : MUTATION_LIST) {
-                    var fileName = INSTANCES_DIR + instance;
-                    run_algorithm(new GA_KQBF(population, mutation, fileName), fileName);
-                }
+        var ttt = new ArrayList<ArrayList<Double>>();
 
-        // GA with Uniform Crossover:
-        System.out.println("----------------------------------- GA with Uniform Crossover");
-        for (var instance : INSTANCE_LIST)
-            for (var population : POPULATION_LIST)
-                for (var mutation : MUTATION_LIST) {
-                    var fileName = INSTANCES_DIR + instance;
-                    run_algorithm(new GA_KQBF_Uniform_Crossover(population, mutation, fileName), fileName);
-                }
+        // Default method:
+        ttt.add(new ArrayList<>());
+        System.out.println("----------------------------------- Default method");
+        for (var instance : INSTANCE_LIST) {
+            var fileName = INSTANCES_DIR + instance;
+            for (int i = 0; i < 50; i++)
+                ttt.get(0).add(run_algorithm(i, new GA_KQBF(
+                        HALT_COSTS.get(instance), 100, 0.1, fileName), fileName));
+        }
 
         // GA with Adaptative Mutation:
+        ttt.add(new ArrayList<>());
         System.out.println("----------------------------------- GA with Adaptative Mutation");
-        for (var instance : INSTANCE_LIST)
-            for (var population : POPULATION_LIST)
-                for (var mutation : MUTATION_LIST) {
-                    var fileName = INSTANCES_DIR + instance;
-                    run_algorithm(new GA_KQBF_Adaptative_Mutation(population, mutation, fileName), fileName);
-                }
+        for (var instance : INSTANCE_LIST) {
+            var fileName = INSTANCES_DIR + instance;
+            for (int i = 0; i < 50; i++)
+                ttt.get(1).add(run_algorithm(i, new GA_KQBF_Adaptative_Mutation(
+                        HALT_COSTS.get(instance), 100, 0.1, fileName), fileName));
+        }
+
+        for (ArrayList<Double> line : ttt) {
+            System.out.print("[");
+            for (Double val : line)
+                System.out.printf("%4f, ", val);
+            System.out.println("]");
+        }
     }
 
-    private static void run_algorithm(GA_KQBF geneticAlgo, String fileName) {
+    private static double run_algorithm(int iter, GA_KQBF geneticAlgo, String fileName) {
         long startTime = System.currentTimeMillis();
-        System.out.println("\n\n=============================");
-        Solution<Integer> bestSolution = geneticAlgo.solve();
+        System.out.println("\n\n============================= " + iter);
+        var bestSolution = geneticAlgo.solve();
         double knapsackWeight = geneticAlgo.weight();
         long endTime = System.currentTimeMillis();
         long totalTime = endTime - startTime;
@@ -66,6 +70,7 @@ public class GA_KQBF_MAIN {
         System.out.println("generations: " + geneticAlgo.getGenerations());
         System.out.println("Best Solution Found: " + bestSolution);
         System.out.println("Knapsack Weight of Best Solution: " + knapsackWeight);
-        System.out.println("Time = " + (double) totalTime / (double) 1000 + " seg");
+        System.out.println("Time = " + (double) totalTime / 1000 + " seg");
+        return (double) totalTime / 1000;
     }
 }

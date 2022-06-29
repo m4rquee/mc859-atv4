@@ -56,7 +56,7 @@ public class GRASP_KQBF_MAIN {
     private static double run_algorithm(int iter, GRASP_KQBF graspAlgo, String fileName) {
         long startTime = System.currentTimeMillis();
         System.out.println("\n\n============================= " + iter);
-        Solution<Integer> bestSolution = graspAlgo.solve();
+        var bestSolution = graspAlgo.solve();
         double knapsackWeight = graspAlgo.weight();
         long endTime = System.currentTimeMillis();
         long totalTime = endTime - startTime;
@@ -67,7 +67,7 @@ public class GRASP_KQBF_MAIN {
         System.out.println("iterations: " + (graspAlgo.iter + 1));
         System.out.println("Best Solution Found: " + bestSolution);
         System.out.println("Knapsack Weight of Best Solution: " + knapsackWeight);
-        System.out.println("Time = " + (double) totalTime / (double) 1000 + " seg");
+        System.out.println("Time = " + (double) totalTime / 1000 + " seg");
         return (double) totalTime / 1000;
     }
 }
