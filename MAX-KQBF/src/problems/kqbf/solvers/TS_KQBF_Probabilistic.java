@@ -10,6 +10,11 @@ public class TS_KQBF_Probabilistic extends TS_KQBF {
         super(tenure, filename, firstImproving);
     }
 
+    public TS_KQBF_Probabilistic(double haltCost, int tenure, String filename, boolean firstImproving)
+            throws IOException {
+        super(haltCost, tenure, filename, firstImproving);
+    }
+
     /**
      * {@inheritDoc}
      * <p>
@@ -19,7 +24,7 @@ public class TS_KQBF_Probabilistic extends TS_KQBF {
     @Override
     public void neighborhoodMove() {
         updateCL();
-        int sampled = Math.round((float) (CL.size() * 0.5));
+        int sampled = Math.round((float) (CL.size() * 0.95));
         ArrayList<Integer> sampledCL = new ArrayList<>(sampled);
         Collections.shuffle(CL);
         for (int i = 0; i < sampled; ++i)

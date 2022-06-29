@@ -41,6 +41,24 @@ public class TS_QBF extends AbstractTS<Integer> {
         this.stImproving = stImproving;
     }
 
+    /**
+     * Constructor for the TS_QBF class. An inverse QBF objective function is
+     * passed as argument for the superclass constructor.
+     *
+     * @param tenure      The Tabu tenure parameter.
+     * @param haltCost    The number of iterations which the TS will be executed.
+     * @param filename    Name of the file for which the objective function
+     *                    parameters
+     *                    should be read.
+     * @param stImproving If should use the first-improving local search, or the
+     *                    best-improving.
+     * @throws IOException necessary for I/O operations.
+     */
+    public TS_QBF(int tenure, double haltCost, String filename, boolean stImproving) throws IOException {
+        super(filename, tenure, haltCost);
+        this.stImproving = stImproving;
+    }
+
     @Override
     protected Evaluator<Integer> initEvaluator(String filename) throws IOException {
         return new QBF_Inverse(filename);

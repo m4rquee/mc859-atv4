@@ -15,7 +15,7 @@ public class GRASP_KQBF_MAIN {
             "kqbf200");
 
     private static final Map<String, Double> HALT_COSTS =
-            Map.of("kqbf060", 450.0, "kqbf100", 1100.0, "kqbf200", 3500.0);
+            Map.of("kqbf060", 400.0, "kqbf100", 1000.0, "kqbf200", 3200.0);
 
     /**
      * A main method used for testing the Genetic Algorithm metaheuristic.
@@ -29,9 +29,9 @@ public class GRASP_KQBF_MAIN {
         var heu = ConstructiveHeuristic.ConstructiveHeuristicType.Basic;
         for (var instance : INSTANCE_LIST) {
             var fileName = INSTANCES_DIR + instance;
-            var solver = new GRASP_KQBF(0.05, HALT_COSTS.get(instance), fileName, heu, false);
             for (int i = 0; i < 50; i++)
-                ttt.get(0).add(run_algorithm(i, solver, fileName));
+                ttt.get(0).add(run_algorithm(i, new GRASP_KQBF(
+                        0.05, HALT_COSTS.get(instance), fileName, heu, false), fileName));
         }
 
         // Sampled Greedy constructive heuristic:
@@ -40,16 +40,15 @@ public class GRASP_KQBF_MAIN {
         heu = ConstructiveHeuristic.ConstructiveHeuristicType.SampledGreedy;
         for (var instance : INSTANCE_LIST) {
             var fileName = INSTANCES_DIR + instance;
-            var solver = new GRASP_KQBF(20.0, HALT_COSTS.get(instance), fileName, heu, false);
             for (int i = 0; i < 50; i++)
-                ttt.get(1).add(run_algorithm(i, solver, fileName));
+                ttt.get(1).add(run_algorithm(i, new GRASP_KQBF(
+                        20.0, HALT_COSTS.get(instance), fileName, heu, false), fileName));
         }
 
         for (ArrayList<Double> line : ttt) {
             System.out.print("[");
-            for (Double val : line) {
+            for (Double val : line)
                 System.out.printf("%4f, ", val);
-            }
             System.out.println("]");
         }
     }
@@ -65,7 +64,7 @@ public class GRASP_KQBF_MAIN {
         System.out.println("instance: " + fileName);
         System.out.println("param: " + graspAlgo.Heuristic.PARAM);
         System.out.println("firstImproving: " + graspAlgo.stImproving);
-        System.out.println("iterations: " + GRASP_KQBF.iterations);
+        System.out.println("iterations: " + (graspAlgo.iter + 1));
         System.out.println("Best Solution Found: " + bestSolution);
         System.out.println("Knapsack Weight of Best Solution: " + knapsackWeight);
         System.out.println("Time = " + (double) totalTime / (double) 1000 + " seg");

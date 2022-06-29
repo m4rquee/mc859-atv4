@@ -45,6 +45,25 @@ public class TS_KQBF extends TS_QBF {
         objFunction = (KQBF) ObjFunction;
     }
 
+    /**
+     * Constructor for the TS_KQBF class. An inverse QBF objective function is
+     * passed as argument for the superclass constructor.
+     *
+     * @param haltCost    The solver will halt only after reaching this  value.
+     * @param tenure      A double hyperparameter used by the constructive
+     *                    heuristics.
+     * @param filename    Name of the file for which the objective function
+     *                    parameters
+     *                    should be read.
+     * @param stImproving If should use the first-improving local search, or the
+     *                    best-improving.
+     * @throws IOException necessary for I/O operations.
+     */
+    public TS_KQBF(double haltCost, int tenure, String filename, boolean stImproving) throws IOException {
+        super(tenure, haltCost, filename, stImproving);
+        objFunction = (KQBF) ObjFunction;
+    }
+
     public double weight() {
         return ((KSolution<Integer>) sol).weigth;
     }
@@ -58,7 +77,7 @@ public class TS_KQBF extends TS_QBF {
     public void updateCL() {
         Double currWeight = ((KSolution<Integer>) sol).weigth;
         CL.removeIf(c -> // if adding this item will overpass the capacity
-        objFunction.W[c] > objFunction.W_max - currWeight);
+                objFunction.W[c] > objFunction.W_max - currWeight);
     }
 
     @Override
@@ -74,7 +93,7 @@ public class TS_KQBF extends TS_QBF {
     public static void main(String[] args) throws IOException {
         for (var instance : INSTANCE_LIST)
             for (var tenure : TENURE_LIST)
-                for (boolean firstImproving : new boolean[] { true, false })
+                for (boolean firstImproving : new boolean[]{true, false})
                     run_algorithm(tenure, firstImproving, INSTANCES_DIR + instance);
     }
 
