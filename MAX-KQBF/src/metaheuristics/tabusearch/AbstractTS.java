@@ -17,7 +17,9 @@ import solutions.Solution;
  */
 public abstract class AbstractTS<E> {
 
-    protected final long MAXIMUM_RUNNING_TIME_SECONDS = 30 * 60; // 30 minutes
+    private final double HALT_COST;
+
+    protected final long MAXIMUM_RUNNING_TIME_SECONDS = 1 * 60; // 1 minutes
 
     /**
      * flag that indicates whether the code should print more information on
@@ -28,7 +30,7 @@ public abstract class AbstractTS<E> {
     /**
      * a random number generator
      */
-    static Random rng = new Random(42);
+    protected final Random rng = new Random(System.currentTimeMillis());
 
     /**
      * the objective function being optimized
@@ -83,7 +85,7 @@ public abstract class AbstractTS<E> {
     /**
      * the current tabu search iteration.
      */
-    protected int iter;
+    public int iter;
 
     /**
      * Creates the Candidate List, which is an ArrayList of candidate elements
@@ -153,6 +155,21 @@ public abstract class AbstractTS<E> {
         this.ObjFunction = initEvaluator(filename);
         this.tenure = tenure;
         this.iterations = iterations;
+        HALT_COST = Double.MAX_VALUE;
+    }
+
+    /**
+     * Constructor for the AbstractTS class.
+     *
+     * @param filename The file containing the objective function parameters.
+     * @param tenure   The Tabu tenure parameter.
+     * @param haltCost The solver will halt only after reaching this  value.
+     */
+    public AbstractTS(String filename, Integer tenure, Double haltCost) throws IOException {
+        this.ObjFunction = initEvaluator(filename);
+        this.tenure = tenure;
+        this.iterations = Integer.MAX_VALUE;
+        HALT_COST = haltCost;
     }
 
     /**
@@ -218,7 +235,7 @@ public abstract class AbstractTS<E> {
         for (iter = 0; iter < iterations; iter++) {
             double totalTime = (System.currentTimeMillis() - startTime) / 1000.0;
             // if (verbose && totalTime % 60 == 0)
-                // System.out.println("CurrTime = " + totalTime + " s");
+            // System.out.println("CurrTime = " + totalTime + " s");
             if (totalTime > MAXIMUM_RUNNING_TIME_SECONDS)
                 break;
             neighborhoodMove();
@@ -229,6 +246,7 @@ public abstract class AbstractTS<E> {
                 if (verbose)
                     System.out.println("(Iter. " + iter + ") BestSol = " + bestSol);
             }
+            if (-bestSol.cost >= HALT_COST) break;
         }
 
         return bestSol;
