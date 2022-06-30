@@ -1,8 +1,7 @@
 package problems.kqbf.solvers;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 
 public class TS_KQBF_Probabilistic extends TS_KQBF {
     public TS_KQBF_Probabilistic(int tenure, String filename, boolean firstImproving)
@@ -24,11 +23,8 @@ public class TS_KQBF_Probabilistic extends TS_KQBF {
     @Override
     public void neighborhoodMove() {
         updateCL();
-        int sampled = Math.round((float) (CL.size() * 0.95));
-        ArrayList<Integer> sampledCL = new ArrayList<>(sampled);
+        int sampled = Math.round((float) (CL.size() * 0.5));
         Collections.shuffle(CL);
-        for (int i = 0; i < sampled; ++i)
-            sampledCL.add(CL.get(i));
-        _neighborhoodMove(sampledCL);
+        _neighborhoodMove(CL.subList(0, sampled));
     }
 }

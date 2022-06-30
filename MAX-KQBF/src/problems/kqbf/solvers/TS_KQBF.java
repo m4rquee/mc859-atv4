@@ -7,6 +7,7 @@ import solutions.KSolution;
 import solutions.Solution;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -75,9 +76,13 @@ public class TS_KQBF extends TS_QBF {
 
     @Override
     public void updateCL() {
-        Double currWeight = ((KSolution<Integer>) sol).weigth;
-        CL.removeIf(c -> // if adding this item will overpass the capacity
-                objFunction.W[c] > objFunction.W_max - currWeight);
+        double maxWeight = objFunction.W_max - ((KSolution<Integer>) sol).weigth;
+        CL = new ArrayList<>();
+        for (int i = 0; i < ObjFunction.getDomainSize(); i++)
+            if (!sol.contains(i)) // if it's not contained already
+                // If adding this item will not overpass the capacity:
+                if (objFunction.W[i] <= maxWeight)
+                    CL.add(i);
     }
 
     @Override

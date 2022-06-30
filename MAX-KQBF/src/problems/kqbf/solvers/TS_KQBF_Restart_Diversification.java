@@ -51,7 +51,7 @@ public class TS_KQBF_Restart_Diversification extends TS_KQBF {
         FREQUENCY_MEMORY = new ArrayList<>(this.ObjFunction.getDomainSize());
         for (int i = 0; i < this.ObjFunction.getDomainSize(); i++)
             FREQUENCY_MEMORY.add(new Tuple(0, i));
-        RESTART_FREQUENCY = (int) 25E2;
+        RESTART_FREQUENCY = (int) 5E4;
     }
 
     @Override
