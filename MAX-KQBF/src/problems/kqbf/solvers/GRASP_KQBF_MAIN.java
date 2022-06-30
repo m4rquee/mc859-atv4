@@ -1,7 +1,6 @@
 package problems.kqbf.solvers;
 
 import metaheuristics.grasp.ConstructiveHeuristic;
-import solutions.Solution;
 
 import java.io.IOException;
 import java.util.*;
@@ -9,13 +8,9 @@ import java.util.*;
 public class GRASP_KQBF_MAIN {
 
     private static final String INSTANCES_DIR = "instances/kqbf/";
-    private static final List<String> INSTANCE_LIST = Arrays.asList(
-            "kqbf060",
-            "kqbf100",
-            "kqbf200");
+    private static final List<String> INSTANCE_LIST = Arrays.asList("kqbf100", "kqbf200", "kqbf400");
 
-    private static final Map<String, Double> HALT_COSTS =
-            Map.of("kqbf060", 400.0, "kqbf100", 1000.0, "kqbf200", 3200.0);
+    private static final Map<String, Double> HALT_COSTS = Map.of("kqbf100", 1200.0, "kqbf200", 3800.0, "kqbf400", 9800.0);
 
     /**
      * A main method used for testing the Genetic Algorithm metaheuristic.
@@ -23,26 +18,26 @@ public class GRASP_KQBF_MAIN {
     public static void main(String[] args) throws IOException {
         var ttt = new ArrayList<ArrayList<Double>>();
 
-        // Basic constructive heuristic:
+        // Sampled Greedy constructive heuristic:
         ttt.add(new ArrayList<>());
-        System.out.println("----------------------------------- Basic constructive heuristic");
-        var heu = ConstructiveHeuristic.ConstructiveHeuristicType.Basic;
+        System.out.println("----------------------------------- Sampled Greedy constructive heuristic");
+        var heu = ConstructiveHeuristic.ConstructiveHeuristicType.SampledGreedy;
         for (var instance : INSTANCE_LIST) {
             var fileName = INSTANCES_DIR + instance;
             for (int i = 0; i < 50; i++)
                 ttt.get(0).add(run_algorithm(i, new GRASP_KQBF(
-                        0.05, HALT_COSTS.get(instance), fileName, heu, false), fileName));
+                        50.0, HALT_COSTS.get(instance), fileName, heu, true), fileName));
         }
 
-        // Sampled Greedy constructive heuristic:
+        // Reactive constructive heuristic:
         ttt.add(new ArrayList<>());
-        System.out.println("----------------------------------- Sampled Greedy constructive heuristic");
-        heu = ConstructiveHeuristic.ConstructiveHeuristicType.SampledGreedy;
+        System.out.println("----------------------------------- Reactive constructive heuristic");
+        heu = ConstructiveHeuristic.ConstructiveHeuristicType.Reactive;
         for (var instance : INSTANCE_LIST) {
             var fileName = INSTANCES_DIR + instance;
             for (int i = 0; i < 50; i++)
                 ttt.get(1).add(run_algorithm(i, new GRASP_KQBF(
-                        20.0, HALT_COSTS.get(instance), fileName, heu, false), fileName));
+                        1000.0, HALT_COSTS.get(instance), fileName, heu, true), fileName));
         }
 
         for (ArrayList<Double> line : ttt) {

@@ -3,6 +3,7 @@ package problems.qbf.solvers;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.List;
 
 import metaheuristics.tabusearch.AbstractTS;
 import problems.Evaluator;
@@ -136,7 +137,7 @@ public class TS_QBF extends AbstractTS<Integer> {
         _neighborhoodMove(CL);
     }
 
-    protected void _neighborhoodMove(ArrayList<Integer> Neighborhood) {
+    protected void _neighborhoodMove(List<Integer> Neighborhood) {
         double minDeltaCost = Double.POSITIVE_INFINITY;
         Integer bestCandIn = null, bestCandOut = null;
 
