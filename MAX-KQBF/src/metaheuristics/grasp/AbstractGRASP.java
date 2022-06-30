@@ -21,7 +21,7 @@ public abstract class AbstractGRASP<E> {
 
     private final double HALT_COST;
 
-    protected final long MAXIMUM_RUNNING_TIME_SECONDS = 1 * 60; // 1 minutes
+    protected final long MAXIMUM_RUNNING_TIME_SECONDS = 2 * 60; // 2 minutes
 
     /**
      * flag that indicates whether the code should print more information on
@@ -205,7 +205,7 @@ public abstract class AbstractGRASP<E> {
             if (bestSol.cost > sol.cost) {
                 bestSol = sol.clone();
                 if (verbose)
-                    System.out.println("(Iter. " + iter + ") BestSol = " + bestSol);
+                    System.out.println("(Iter. " + iter + ") BestSol = " + -bestSol.cost);
             }
             if (-bestSol.cost >= HALT_COST) break;
         }

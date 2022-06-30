@@ -19,7 +19,7 @@ public abstract class AbstractTS<E> {
 
     private final double HALT_COST;
 
-    protected final long MAXIMUM_RUNNING_TIME_SECONDS = 1 * 60; // 1 minutes
+    protected final long MAXIMUM_RUNNING_TIME_SECONDS = 2 * 60; // 2 minutes
 
     /**
      * flag that indicates whether the code should print more information on
@@ -239,12 +239,12 @@ public abstract class AbstractTS<E> {
             if (totalTime > MAXIMUM_RUNNING_TIME_SECONDS)
                 break;
             neighborhoodMove();
-            if (verbose && iter % interval == 0)
-                System.out.println("(Iter. " + iter + ") CurrSol = " + sol);
+            // if (verbose && iter % interval == 0)
+            // System.out.println("(Iter. " + iter + ") CurrSol = " + sol);
             if (bestSol.cost > sol.cost) {
                 bestSol = new Solution<>(sol);
                 if (verbose)
-                    System.out.println("(Iter. " + iter + ") BestSol = " + bestSol);
+                    System.out.println("(Iter. " + iter + ") BestSol = " + -bestSol.cost);
             }
             if (-bestSol.cost >= HALT_COST) break;
         }
