@@ -26,7 +26,7 @@ public class GRASP_KQBF_MAIN {
             var fileName = INSTANCES_DIR + instance;
             for (int i = 0; i < 50; i++)
                 ttt.get(0).add(run_algorithm(i, new GRASP_KQBF(
-                        50.0, HALT_COSTS.get(instance), fileName, heu, true), fileName));
+                        50.0, HALT_COSTS.get(instance), fileName, heu, false), fileName));
         }
 
         // Reactive constructive heuristic:
@@ -37,7 +37,7 @@ public class GRASP_KQBF_MAIN {
             var fileName = INSTANCES_DIR + instance;
             for (int i = 0; i < 50; i++)
                 ttt.get(1).add(run_algorithm(i, new GRASP_KQBF(
-                        1000.0, HALT_COSTS.get(instance), fileName, heu, true), fileName));
+                        5.0, HALT_COSTS.get(instance), fileName, heu, false), fileName));
         }
 
         for (ArrayList<Double> line : ttt) {
